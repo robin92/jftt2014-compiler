@@ -1,0 +1,12 @@
+CONST
+    one = 1
+VAR
+    a b
+BEGIN
+    (* rozpoczynamy program *)
+    a := 5;
+    b := 2;
+    WHILE a > b DO
+        a := a - one;
+    END
+END

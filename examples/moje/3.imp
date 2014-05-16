@@ -1,0 +1,15 @@
+CONST
+    one = 1
+VAR
+    a b
+BEGIN
+    a := 5;
+    b := 2;
+    WHILE a > b DO
+        a := a - one;
+        IF b != one THEN
+            a := a - one;
+        ELSE
+        END
+    END
+END

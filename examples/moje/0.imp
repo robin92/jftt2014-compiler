@@ -1,0 +1,6 @@
+CONST
+VAR
+    a
+BEGIN
+    a := 5;
+END

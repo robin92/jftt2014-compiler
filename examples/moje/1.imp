@@ -1,0 +1,12 @@
+CONST
+VAR
+    a b
+BEGIN
+    a := 5;
+    b := 2;
+    IF a > b THEN
+        a := 1;
+    ELSE
+        a := 0;
+    END
+END
