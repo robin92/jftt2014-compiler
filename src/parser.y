@@ -12,7 +12,7 @@
 
 %union {
 	char *id;
-	std::uint64_t const_num;
+	char *bignum;
 }
  
 %{
@@ -36,7 +36,7 @@
 %}
 
 %token <id> IDENTIFIER
-%token <const_num> NUM
+%token <bignum> NUM
 %token ERROR
 %token SEMICOLON
 
@@ -103,7 +103,7 @@ cdeclarations:
 
 		ISymbolTable::Entry entry;
 		entry.has_value = true;
-		entry.value = std::to_string($4);
+		entry.value = std::string($4);
 
 		std::uint32_t addr = 0;
 		std::string tmp = code::generate_const(&addr, entry.value);
@@ -113,7 +113,7 @@ cdeclarations:
 		symtbl->update($2, entry);
 		
 		assert(symtbl->contains($2));
-		assert(std::stol(symtbl->get($2).value) == $4);
+		assert(symtbl->get($2).value == std::string($4));
 	}
 |	%empty
 ;

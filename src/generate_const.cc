@@ -4,34 +4,44 @@
 #include <sstream>
 #include <string>
 
+#include <gmpxx.h>
+
 #include "code.hh"
 
 
 
 using namespace code::cmd;
 
+std::int32_t
+get_leftmost_bit(std::string* binnum)
+{
+	char c = (*binnum)[0];
+	*binnum = binnum->length() >= 2 ? binnum->substr(1) : "0";
+		
+	return c == '0' ? 0 : 1;
+}
+
 std::string
 code::generate_const(std::uint32_t* addr, const std::string& decnum)
 {
-	// TODO: wsparcie dla dużych liczb (> 64b)
 	std::cerr << ">> generowanie kodu dla stałej " << decnum << "\n";
 
 	std::list<std::string> lines;
-	std::uint64_t number = std::stol(decnum);
+	mpz_class number(decnum);
+	std::string bin = number.get_str(2);
+	std::uint64_t limit = mpz_sizeinbase(number.get_mpz_t(), 2);
 	bool was_one = false;
 
 	lines.push_back(ZERO);
-	for (std::int32_t i = 0; i < sizeof(std::uint64_t) << 3; i++)
+	for (std::int32_t i = 0; i < limit; i++)
 	{
-		if ( (number & 0x8000000000000000) > 0 )
+		if ( get_leftmost_bit(&bin) > 0 )
 		{
 			// bit 1
 			was_one = true;
 			lines.push_back(INC);
 		}
-		if ( (i + 1 != sizeof(std::uint64_t) << 3) and was_one) lines.push_back(SHL);
-
-		number <<= 1;
+		if ( (i != limit - 1) and was_one) lines.push_back(SHL);
 	}
 
 	std::ostringstream code;

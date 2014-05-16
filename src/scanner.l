@@ -45,7 +45,7 @@ ID		[_a-z]+
 
 {ID}	{ yylval.id = strdup(yytext); return IDENTIFIER; }
 
-{NUMBER}	{ yylval.const_num = std::stol(strdup(yytext)); return NUM; }
+{NUMBER}	{ yylval.bignum = strdup(yytext); return NUM; }
 
 "="		{ return OPERATOR_CONST_ASSIGNMENT; }
 
