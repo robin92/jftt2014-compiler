@@ -44,6 +44,7 @@ add_executable (kompilator
         ${SOURCEDIR}/scanner.lex.cc
         ${SOURCEDIR}/ISymbolTable.cc
         ${SOURCEDIR}/SymbolTable.cc
+        ${SOURCEDIR}/generate_const.cc
     )
 #target_link_libraries (infix fl)
 
