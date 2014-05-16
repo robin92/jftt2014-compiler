@@ -40,6 +40,8 @@ add_executable (kompilator
         ${SOURCEDIR}/main.cc
         ${SOURCEDIR}/parser.tab.cc
         ${SOURCEDIR}/scanner.lex.cc
+        ${SOURCEDIR}/ISymbolTable.cc
+        ${SOURCEDIR}/SymbolTable.cc
     )
 #target_link_libraries (infix fl)
 

@@ -5,6 +5,8 @@
 
 	#include <cassert>
 	#include <cstdio>
+
+	#include "SymbolTable.hh"
 %}
 
 %union {
@@ -26,6 +28,8 @@
 	//
 
 	void yyerror(const std::string& str);
+	
+	ISymbolTable *symtbl = new SymbolTable();
 %}
 
 %token <id> IDENTIFIER
@@ -69,16 +73,54 @@
 %%
 
 program:
-	CONST cdeclarations VAR vdeclarations PBEGIN commands END
+	CONST cdeclarations VAR vdeclarations PBEGIN commands END {
+		std::ostringstream oss;		
+		for (auto symbol : symtbl->all())
+		{
+			oss << "(" << *symbol.first << ", ";
+			symbol.second->has_value ? oss << symbol.second->value : oss << "null";
+			oss << ") ";
+		}
+	
+		std::cerr << ">> symbols: " << oss.str() << "\n";
+	}
 ;
 
 cdeclarations:
-	cdeclarations IDENTIFIER OPERATOR_CONST_ASSIGNMENT NUM
+	cdeclarations IDENTIFIER OPERATOR_CONST_ASSIGNMENT NUM	{
+		fprintf(stderr, ">> nowa stała: [%s]: %ld\n", $2, $4);
+		
+		if (symtbl->contains($2)) {
+			// TODO: błąd - już zdefiniowano
+			return ERROR;
+		}
+		
+		ISymbolTable::Entry entry;
+		entry.has_value = true;
+		entry.value = std::to_string($4);
+		
+		symtbl->insert($2);
+		symtbl->update($2, entry);
+		
+		assert(symtbl->contains($2));
+		assert(std::stol(symtbl->get($2).value) == $4);
+	}
 |	%empty
 ;
 
 vdeclarations:
-	vdeclarations IDENTIFIER
+	vdeclarations IDENTIFIER {
+		fprintf(stderr, ">> nowa zmienna: [%s]\n", $2);
+		
+		if (symtbl->contains($2)) {
+			// TODO: błąd - już zdefiniowano
+			return ERROR;
+		}
+		
+		symtbl->insert($2);
+		
+		assert(symtbl->contains($2));
+	}
 |	%empty
 ;
 
