@@ -1,41 +1,65 @@
 
-%require  "3.0"
+%{
+	#include <iostream>
+	#include <sstream>
 
-%skeleton "lalr1.cc"
+	#include <cassert>
+	#include <cstdio>
+%}
 
-%defines
-%define api.value.type {long}
- 
-%code requires{
-    class Scanner;
+%union {
+	char *id;
+	std::uint64_t const_num;
 }
  
-%lex-param   { Scanner& scanner }
-%parse-param { Scanner& scanner }
- 
-%code{
-    #include <iostream>
-    #include <sstream>
+%{
+	//
+	// scanner objects
+	//
 
-    //
-    // variables for parsing
-    //
-    
-    std::ostringstream onpNotation;
+	extern std::int32_t yylex();
+	
+	extern std::int32_t yylineno;
 
-    //
-    // functions used in parser
-    //
-    
-    // wrapper for yylex
-    static int yylex(yy::parser::semantic_type *yylval, Scanner& scanner);
+	//
+	// parser objects
+	//
 
 	void yyerror(const std::string& str);
-}
+%}
 
-%token IDENTIFIER
-%token NUM
+%token <id> IDENTIFIER
+%token <const_num> NUM
 %token ERROR
+%token SEMICOLON
+
+%token CONST
+%token VAR
+%token PBEGIN
+%token END
+%token IF
+%token THEN
+%token ELSE
+%token WHILE
+%token DO
+%token TRUE
+%token FALSE
+%token READ
+%token WRITE
+
+%token OPERATOR_CONST_ASSIGNMENT
+%token OPERATOR_ASSIGNMENT
+%token OPERATOR_ADD
+%token OPERATOR_SUBTRACT
+%token OPERATOR_MULTIPLY
+%token OPERATOR_DIVIDE
+%token OPERATOR_MODULO
+%token OPERATOR_EQ
+%token OPERATOR_NE
+%token OPERATOR_LT
+%token OPERATOR_GT
+%token OPERATOR_LE
+%token OPERATOR_GE
 
 %right ":="
 %left '%'
@@ -45,66 +69,58 @@
 %%
 
 program:
-|	"CONST" cdeclarations "VAR" vdeclarations "BEGIN" commands "END"	{}
+	CONST cdeclarations VAR vdeclarations PBEGIN commands END
 ;
 
 cdeclarations:
-|	cdeclarations IDENTIFIER "=" NUM	{}
-|	""
+	cdeclarations IDENTIFIER OPERATOR_CONST_ASSIGNMENT NUM
+|	%empty
 ;
 
 vdeclarations:
-|	vdeclarations IDENTIFIER	{}
-|	""
+	vdeclarations IDENTIFIER
+|	%empty
 ;
 
 commands:
-|	commands command
-|	""
+	commands command
+|	%empty
 ;
 
 command:
-|	IDENTIFIER ":=" expression ";"
-|	"IF" condition "THEN" command "ELSE" command "END"
-|	"WHILE" condition "DO" command "END"
+	IDENTIFIER OPERATOR_ASSIGNMENT expression SEMICOLON
+|	IF condition THEN commands ELSE commands END
+|	WHILE condition DO commands END
+|	READ IDENTIFIER SEMICOLON
+|	WRITE IDENTIFIER SEMICOLON
 ;
 
 expression:
-|	NUM
+	NUM
 |	IDENTIFIER
-|	IDENTIFIER "+" IDENTIFIER
-|	IDENTIFIER "-" IDENTIFIER
-|	IDENTIFIER "*" IDENTIFIER
-|	IDENTIFIER "/" IDENTIFIER
-|	IDENTIFIER "%" IDENTIFIER
+|	IDENTIFIER OPERATOR_ADD IDENTIFIER
+|	IDENTIFIER OPERATOR_SUBTRACT IDENTIFIER
+|	IDENTIFIER OPERATOR_MULTIPLY IDENTIFIER
+|	IDENTIFIER OPERATOR_DIVIDE IDENTIFIER
+|	IDENTIFIER OPERATOR_MODULO IDENTIFIER
 ;
 
 condition:
-|	"true"
-|	"false"
-|	IDENTIFIER "==" IDENTIFIER
-|	IDENTIFIER "!=" IDENTIFIER
-|	IDENTIFIER "<" IDENTIFIER
-|	IDENTIFIER ">" IDENTIFIER
-|	IDENTIFIER "<=" IDENTIFIER
-|	IDENTIFIER ">=" IDENTIFIER
+	IDENTIFIER OPERATOR_EQ IDENTIFIER
+|	IDENTIFIER OPERATOR_NE IDENTIFIER
+|	IDENTIFIER OPERATOR_LT IDENTIFIER
+|	IDENTIFIER OPERATOR_GT IDENTIFIER
+|	IDENTIFIER OPERATOR_LE IDENTIFIER
+|	IDENTIFIER OPERATOR_GE IDENTIFIER
 ;
 
 %%
 
 void
-yy::parser::error(std::string const& error)
+yyerror(std::string const& error)
 {
-    std::cerr << "Error: " << error << "\n";
-}
-
-/* include for access to scanner.yylex */
-#include "scanner.hh"
-
-static
-int 
-yylex(yy::parser::semantic_type *yylval, Scanner& scanner)
-{
-   return scanner.yylex(yylval);
+	fprintf(stderr, "[%d line] Error: %s\n",
+			yylineno,
+			error.c_str());
 }
 
