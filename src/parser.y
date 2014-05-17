@@ -106,7 +106,7 @@ cdeclarations:
 		entry.value = std::string($4);
 
 		std::uint32_t addr = 0;
-		std::string tmp = code::generate_const(&addr, entry.value);
+		std::string tmp = code::generate_number(&addr, entry.value);
 		machine_code << tmp;
 
 		symtbl->insert($2);

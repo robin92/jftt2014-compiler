@@ -29,7 +29,7 @@ namespace code
 	}	// namespace cmd
 
 	std::string
-	generate_const(std::uint32_t* addr, const std::string& decnum);
+	generate_number(std::uint32_t* addr, const std::string& decnum);
 }	// namespace code
 
 #endif	// COMPILER_CODE_HH_

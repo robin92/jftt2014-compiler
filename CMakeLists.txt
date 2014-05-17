@@ -48,7 +48,7 @@ add_executable (kompilator
         ${SOURCEDIR}/scanner.lex.cc
         ${SOURCEDIR}/ISymbolTable.cc
         ${SOURCEDIR}/SymbolTable.cc
-        ${SOURCEDIR}/generate_const.cc
+        ${SOURCEDIR}/generate_number.cc
     )
 target_link_libraries (kompilator
 		${GMP_LIBRARY}

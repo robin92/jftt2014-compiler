@@ -22,9 +22,9 @@ get_leftmost_bit(std::string* binnum)
 }
 
 std::string
-code::generate_const(std::uint32_t* addr, const std::string& decnum)
+code::generate_number(std::uint32_t* addr, const std::string& decnum)
 {
-	std::cerr << ">> generowanie kodu dla stałej " << decnum << "\n";
+	std::cerr << ">> generowanie kodu dla liczby " << decnum << "\n";
 
 	std::list<std::string> lines;
 	mpz_class number(decnum);
