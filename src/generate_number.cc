@@ -22,7 +22,7 @@ get_leftmost_bit(std::string* binnum)
 }
 
 std::string
-code::generate_number(std::uint32_t* addr, const std::string& decnum)
+code::generate_number(const std::string& decnum)
 {
 	std::cerr << ">> generowanie kodu dla liczby " << decnum << "\n";
 
@@ -46,8 +46,6 @@ code::generate_number(std::uint32_t* addr, const std::string& decnum)
 
 	std::ostringstream code;
 	for (std::string& str : lines) code << str << "\n";
-	code << STORE << " 0\n"
-			<< PRINT << " 0\n";
 
 	return code.str();
 }
