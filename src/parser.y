@@ -12,9 +12,14 @@
 	#include "SymbolTable.hh"
 %}
 
+%code requires {
+	#include "expression.hh"
+}
+
 %union {
 	char *id;
 	char *bignum;
+	Expression *expr;
 }
  
 %{
@@ -41,6 +46,8 @@
 
 	static inline std::uint32_t next_mem_addr();
 %}
+
+%type <expr> expression
 
 %token <id> IDENTIFIER
 %token <bignum> NUM
@@ -153,7 +160,28 @@ commands:
 ;
 
 command:
-	IDENTIFIER OPERATOR_ASSIGNMENT expression SEMICOLON
+	IDENTIFIER OPERATOR_ASSIGNMENT expression SEMICOLON {
+		if ( not(symtbl->contains($1)) )
+		{
+			std::ostringstream oss;
+			oss << "identifier '" << $1 << "' has not been declared";
+			yyerror(oss.str());
+			return ERROR;
+		}
+		
+		ISymbolTable::Entry entry = symtbl->get($1);
+		fprintf(stderr, ">> expression = '%d'\n", $3->type);
+		
+		// TODO
+		switch ($3->type)
+		{
+			case Expression::Type::NUMBER:
+			case Expression::Type::IDENTIFIER:
+			case Expression::Type::COMPLEX:
+			default:
+				break;
+		}
+	}
 |	IF condition THEN commands ELSE commands END
 |	WHILE condition DO commands END
 |	READ IDENTIFIER SEMICOLON
@@ -175,13 +203,48 @@ command:
 ;
 
 expression:
-	NUM
-|	IDENTIFIER
-|	IDENTIFIER OPERATOR_ADD IDENTIFIER
-|	IDENTIFIER OPERATOR_SUBTRACT IDENTIFIER
-|	IDENTIFIER OPERATOR_MULTIPLY IDENTIFIER
-|	IDENTIFIER OPERATOR_DIVIDE IDENTIFIER
-|	IDENTIFIER OPERATOR_MODULO IDENTIFIER
+	NUM {
+		Expression *expr = new Expression();
+		expr->type = Expression::Type::NUMBER;
+		expr->number = $1;
+		$$ = expr;
+	}
+|	IDENTIFIER {
+		Expression *expr = new Expression();
+		expr->type = Expression::Type::IDENTIFIER;
+		expr->identifier = $1;
+		$$ = expr;
+	}
+|	IDENTIFIER OPERATOR_ADD IDENTIFIER {
+		Expression *expr = new Expression();
+		expr->type = Expression::Type::COMPLEX;
+		expr->complex = std::make_tuple($1, $3, Expression::Operation::ADD);
+		$$ = expr;
+	}
+|	IDENTIFIER OPERATOR_SUBTRACT IDENTIFIER {
+		Expression *expr = new Expression();
+		expr->type = Expression::Type::COMPLEX;
+		expr->complex = std::make_tuple($1, $3, Expression::Operation::SUBTRACT);
+		$$ = expr;
+	}
+|	IDENTIFIER OPERATOR_MULTIPLY IDENTIFIER {
+		Expression *expr = new Expression();
+		expr->type = Expression::Type::COMPLEX;
+		expr->complex = std::make_tuple($1, $3, Expression::Operation::MULTIPLY);
+		$$ = expr;
+	}
+|	IDENTIFIER OPERATOR_DIVIDE IDENTIFIER {
+		Expression *expr = new Expression();
+		expr->type = Expression::Type::COMPLEX;
+		expr->complex = std::make_tuple($1, $3, Expression::Operation::DIVIDE);
+		$$ = expr;
+	}
+|	IDENTIFIER OPERATOR_MODULO IDENTIFIER {
+		Expression *expr = new Expression();
+		expr->type = Expression::Type::COMPLEX;
+		expr->complex = std::make_tuple($1, $3, Expression::Operation::MODULO);
+		$$ = expr;
+	}
 ;
 
 condition:

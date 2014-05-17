@@ -6,9 +6,11 @@
     #include <iostream>
     #include <string>
     #include <sstream>
+    #include <tuple>
   
     #include <cstdio>
 
+	#include "expression.hh"
     #include "parser.tab.hh"
 %}
 
