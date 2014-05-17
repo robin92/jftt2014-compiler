@@ -1,4 +1,6 @@
 
+%error-verbose
+
 %{
 	#include <iostream>
 	#include <sstream>
@@ -20,7 +22,9 @@
 	// scanner objects
 	//
 
-	extern std::int32_t yylex();
+	extern
+	std::int32_t
+	yylex();
 	
 	extern std::int32_t yylineno;
 
@@ -28,11 +32,14 @@
 	// parser objects
 	//
 
-	void yyerror(const std::string& str);
+	void 
+	yyerror(const std::string& str);
 
-	std::ostringstream machine_code;
+	static std::ostringstream machine_code;
 
-	ISymbolTable *symtbl = new SymbolTable();
+	static ISymbolTable *symtbl = new SymbolTable();
+
+	static inline std::uint32_t next_mem_addr();
 %}
 
 %token <id> IDENTIFIER
@@ -97,17 +104,21 @@ cdeclarations:
 		fprintf(stderr, ">> nowa stała: [%s]: %ld\n", $2, $4);
 		
 		if (symtbl->contains($2)) {
-			// TODO: błąd - już zdefiniowano
+			std::ostringstream oss;
+			oss << "identifier '" << $2 << "' already defined";
+			yyerror(oss.str());
 			return ERROR;
 		}
 
 		ISymbolTable::Entry entry;
 		entry.has_value = true;
 		entry.value = std::string($4);
-
-		std::uint32_t addr = 0;
-		std::string tmp = code::generate_number(&addr, entry.value);
-		machine_code << tmp;
+		entry.current_addr = next_mem_addr();
+		
+		std::string tmp = code::generate_number(entry.value);
+		machine_code
+				<< tmp
+				<< code::cmd::STORE << " " << entry.current_addr << "\n";
 
 		symtbl->insert($2);
 		symtbl->update($2, entry);
@@ -123,7 +134,9 @@ vdeclarations:
 		fprintf(stderr, ">> nowa zmienna: [%s]\n", $2);
 		
 		if (symtbl->contains($2)) {
-			// TODO: błąd - już zdefiniowano
+			std::ostringstream oss;
+			oss << "identifier '" << $2 << "' already defined";
+			yyerror(oss.str());
 			return ERROR;
 		}
 		
@@ -144,7 +157,21 @@ command:
 |	IF condition THEN commands ELSE commands END
 |	WHILE condition DO commands END
 |	READ IDENTIFIER SEMICOLON
-|	WRITE IDENTIFIER SEMICOLON
+|	WRITE IDENTIFIER SEMICOLON {
+		fprintf(stderr, ">> wypisywanie wartości\n");
+		
+		if ( not(symtbl->contains($2)) )
+		{
+			std::ostringstream oss;
+			oss << "identifier '" << $2 << "' has not been declared";
+			yyerror(oss.str());
+			return ERROR;
+		}
+		
+		ISymbolTable::Entry entry = symtbl->get($2);
+		machine_code
+			<< code::cmd::PRINT << " " << entry.current_addr << "\n";
+	}
 ;
 
 expression:
@@ -174,5 +201,12 @@ yyerror(std::string const& error)
 	fprintf(stderr, "[%d line] Error: %s\n",
 			yylineno,
 			error.c_str());
+}
+
+std::uint32_t
+next_mem_addr()
+{
+	static std::uint32_t addr = 0;
+	return addr++;
 }
 
