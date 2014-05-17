@@ -6,4 +6,9 @@ CONST
     e = 43273640
 VAR
 BEGIN
+    WRITE a;
+    WRITE b;
+    WRITE c;
+    WRITE d;
+    WRITE e;
 END
