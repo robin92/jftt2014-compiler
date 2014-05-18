@@ -8,8 +8,8 @@
 	#include <cassert>
 	#include <cstdio>
 
-	#include "code.hh"
 	#include "SymbolTable.hh"
+	#include "code/code.hh"
 %}
 
 %code requires {

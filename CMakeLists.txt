@@ -42,18 +42,22 @@ set (SOURCEDIR "src")
 FLEX_TARGET (scanner ${SOURCEDIR}/scanner.l ${SOURCEDIR}/scanner.lex.cc)
 BISON_TARGET (parser ${SOURCEDIR}/parser.y ${SOURCEDIR}/parser.tab.cc)
 
+add_library (genvm
+        ${SOURCEDIR}/code/generate_number.cc
+        ${SOURCEDIR}/code/copy_value.cc
+        ${SOURCEDIR}/code/add.cc
+	)
+
 add_executable (kompilator
         ${SOURCEDIR}/main.cc
         ${SOURCEDIR}/parser.tab.cc
         ${SOURCEDIR}/scanner.lex.cc
         ${SOURCEDIR}/ISymbolTable.cc
         ${SOURCEDIR}/SymbolTable.cc
-        ${SOURCEDIR}/generate_number.cc
-        ${SOURCEDIR}/copy_value.cc
-        ${SOURCEDIR}/add.cc
     )
 target_link_libraries (kompilator
 		${GMP_LIBRARY}
 		${GMPXX_LIBRARIES}		
+		genvm
 	)
 
