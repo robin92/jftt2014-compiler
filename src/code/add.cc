@@ -10,13 +10,13 @@
 using namespace code::cmd;
 
 std::string
-code::add(const std::uint32_t& a, const std::uint32_t& b)
+code::add(const ISymbolTable::Entry& a, const ISymbolTable::Entry& b)
 {
 	std::ostringstream machine_code;
 
 	machine_code
-			<< LOAD << " " << a << "\n"
-			<< ADD << " " << b << "\n";
+			<< LOAD << " " << a.current_addr << "\n"
+			<< ADD << " " << b.current_addr << "\n";
 
 	return machine_code.str();
 }

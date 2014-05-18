@@ -8,8 +8,6 @@
 	#include <cassert>
 	#include <cstdio>
 
-	#include <gmpxx.h>
-
 	#include "SymbolTable.hh"
 	#include "code/code.hh"
 %}
@@ -213,7 +211,7 @@ command:
 				
 					ISymbolTable::Entry remoteEntry = symtbl->get($3->identifier);
 					machine_code
-							<< code::copy_value(entry.current_addr, remoteEntry.current_addr);	
+							<< code::copy_value(entry, remoteEntry);	
 				}
 				break;
 
@@ -351,35 +349,15 @@ parse_complex_expr(const ISymbolTable::Entry& entry, const Expression& expr)
 		case Expression::Operation::ADD:
 			{
 				machine_code
-						<< code::add(first.current_addr, second.current_addr)
+						<< code::add(first, second)
 						<< code::cmd::STORE << " " << entry.current_addr << "\n";
 			}
 			break;
 
 		case Expression::Operation::SUBTRACT:
 			{
-				// optymalizacja: oba symbole to stałe, jeśli a <= b to a - b <= 0
-				// a w maszyna nie obsługuje liczb < 0, koszt wyzerowania jest mniejszy
-				// niż koszt odejmowania
-				bool done = false;
-				if (first.has_value and second.has_value)
-				{
-					mpz_class a(first.value), b(second.value);
-					if ( a <= b )
-					{
-						machine_code
-								<< code::cmd::ZERO << "\n";
-						done = true;
-					}
-				}
-
-				if (not(done))
-				{
-					machine_code
-							<< code::subtract(first.current_addr, second.current_addr);
-				}
-
 				machine_code
+						<< code::subtract(first, second)
 						<< code::cmd::STORE << " " << entry.current_addr << "\n";
 			}
 			break;

@@ -1,6 +1,8 @@
 #ifndef COMPILER_CODE_HH_
 #define COMPILER_CODE_HH_
 
+#include "../ISymbolTable.hh"
+
 namespace code
 {
 	namespace cmd
@@ -31,17 +33,14 @@ namespace code
 	std::string
 	generate_number(const std::string& decnum);
 
-	// FIXME: powinna przyjmować ISymbolTable::Entry
 	std::string
-	copy_value(const std::uint32_t& dst, const std::uint32_t& src);
+	copy_value(const ISymbolTable::Entry& dst, const ISymbolTable::Entry& src);
 
-	// FIXME: powinna przyjmować ISymbolTable::Entry
 	std::string
-	add(const std::uint32_t& a, const std::uint32_t& b);
+	add(const ISymbolTable::Entry& a, const ISymbolTable::Entry& b);
 
-	// FIXME: powinna przyjmować ISymbolTable::Entry
 	std::string
-	subtract(const std::uint32_t& a, const std::uint32_t& b);
+	subtract(const ISymbolTable::Entry& a, const ISymbolTable::Entry& b);
 }	// namespace code
 
 #endif	// COMPILER_CODE_HH_
