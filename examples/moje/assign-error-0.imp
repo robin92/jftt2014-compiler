@@ -1,0 +1,8 @@
+(* kompilacja powinna zakończyć się błędem 
+ * powód: przypisanie wartości nieistniejącemu symbolowi
+ *)
+CONST
+VAR
+BEGIN
+    a := 69;
+END

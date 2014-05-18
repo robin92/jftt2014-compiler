@@ -171,10 +171,19 @@ command:
 		}
 		
 		ISymbolTable::Entry entry = symtbl->get($1);
+		if (entry.has_value)
+		{
+			std::ostringstream oss;
+			oss << "identifier '" << $1 << "' is declared constant";
+			yyerror(oss.str());
+			return ERROR;
+		}
+		
 		fprintf(stderr, ">> expression = '%d'\n", $3->type);
 		
 		switch ($3->type)
 		{
+			// przypisywanie zmiennej wartości numerycznej
 			case Expression::Type::NUMBER:
 				{
 					machine_code
@@ -183,6 +192,7 @@ command:
 				}
 				break;
 
+			// przypisywanie zmiennej wartości stałej lub innej zmiennej
 			case Expression::Type::IDENTIFIER:
 				{
 					if ( not(symtbl->contains($3->identifier)) )
@@ -200,6 +210,7 @@ command:
 				break;
 
 			// TODO
+			// przypisywanie zmiennej wartości wyrażenia arytmetycznego
 			case Expression::Type::COMPLEX:
 				break;
 

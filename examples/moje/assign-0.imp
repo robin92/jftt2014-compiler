@@ -1,0 +1,27 @@
+CONST
+VAR
+    a b c
+BEGIN
+    a := 12;
+    b := 3;
+    WRITE a;
+    WRITE b;
+    
+    c := a;
+    WRITE c;
+
+    c := a + b;
+    WRITE c;
+
+    c := a - b;
+    WRITE c;
+
+    c := a * b;
+    WRITE c;
+
+    c := a / b;
+    WRITE c;
+
+    c := a % b;
+    WRITE c;
+END

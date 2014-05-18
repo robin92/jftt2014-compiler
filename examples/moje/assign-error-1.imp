@@ -1,0 +1,9 @@
+(* kompilacja powinna zakończyć się błędem 
+ * powód: redefinicja wartości stałej
+ *)
+CONST
+    a = 69
+VAR
+BEGIN
+    a := 12;
+END
