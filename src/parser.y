@@ -42,6 +42,12 @@
 	static ISymbolTable *symtbl = new SymbolTable();
 
 	static inline std::uint32_t next_mem_addr();
+	
+	//
+	// parser methods
+	//
+	
+	std::int32_t parse_complex_expr(const ISymbolTable::Entry& entry, const Expression& expr);
 %}
 
 %type <expr> expression
@@ -212,6 +218,7 @@ command:
 			// TODO
 			// przypisywanie zmiennej wartości wyrażenia arytmetycznego
 			case Expression::Type::COMPLEX:
+				if (parse_complex_expr(entry, *$3) != 0) return ERROR;
 				break;
 
 			default:
@@ -310,5 +317,52 @@ next_mem_addr()
 {
 	static std::uint32_t addr = 0;
 	return addr++;
+}
+
+std::int32_t
+parse_complex_expr(const ISymbolTable::Entry& entry, const Expression& expr)
+{
+	switch (std::get<2>(expr.complex))
+	{
+		case Expression::Operation::ADD:
+			{
+				std::string firstId = std::get<0>(expr.complex),
+						secondId = std::get<1>(expr.complex);
+				
+				if ( not(symtbl->contains(firstId)) )
+				{
+					std::ostringstream oss;
+					oss << "identifier '" << firstId << "' has not been declared";
+					yyerror(oss.str());
+					return 1;
+				}
+				
+				if ( not(symtbl->contains(secondId)) )
+				{
+					std::ostringstream oss;
+					oss << "identifier '" << secondId << "' has not been declared";
+					yyerror(oss.str());
+					return 2;
+				}
+
+				ISymbolTable::Entry first = symtbl->get(firstId),
+						second = symtbl->get(secondId);
+
+				machine_code
+						<< code::add(first.current_addr, second.current_addr)
+						<< code::cmd::STORE << " " << entry.current_addr << "\n";
+			}
+			break;
+		
+		// TODO
+		case Expression::Operation::SUBTRACT:
+		case Expression::Operation::MULTIPLY:
+		case Expression::Operation::DIVIDE:
+		case Expression::Operation::MODULO:
+		default:
+			break;
+	}
+	
+	return 0;
 }
 

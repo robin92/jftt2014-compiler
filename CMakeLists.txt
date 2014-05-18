@@ -50,6 +50,7 @@ add_executable (kompilator
         ${SOURCEDIR}/SymbolTable.cc
         ${SOURCEDIR}/generate_number.cc
         ${SOURCEDIR}/copy_value.cc
+        ${SOURCEDIR}/add.cc
     )
 target_link_libraries (kompilator
 		${GMP_LIBRARY}

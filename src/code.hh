@@ -33,6 +33,9 @@ namespace code
 
 	std::string
 	copy_value(const std::uint32_t& dst, const std::uint32_t& src);
+	
+	std::string
+	add(const std::uint32_t& a, const std::uint32_t& b);
 }	// namespace code
 
 #endif	// COMPILER_CODE_HH_
