@@ -1,4 +1,5 @@
 
+#include <algorithm>
 #include <iostream>
 #include <sstream>
 #include <string>
@@ -16,6 +17,10 @@
 extern
 void
 yyerror(const std::string&);
+
+static
+std::uint32_t
+count_lines(const std::string& str);
 
 static
 std::int32_t
@@ -110,6 +115,12 @@ Command::operator() (
 
 
 
+std::uint32_t
+count_lines(const std::string& str)
+{
+	return (std::uint32_t) std::count(str.begin(), str.end(), '\n');
+}
+
 std::int32_t
 handle_assignment(
 		std::string *out,
@@ -177,6 +188,7 @@ handle_assignment(
 	}
 	
 	*out = machine_code.str();
+	*length = count_lines(*out);
 	return 0;
 }
 
@@ -205,6 +217,7 @@ handle_write(
 			<< code::cmd::PRINT << " " << entry.current_addr << "\n";			
 
 	*out = machine_code.str();
+	*length = count_lines(*out);
 	return 0;
 }
 

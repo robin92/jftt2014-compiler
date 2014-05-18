@@ -2,6 +2,7 @@
 %error-verbose
 
 %{
+	#include <algorithm>
 	#include <iostream>
 	#include <sstream>
 
@@ -97,21 +98,25 @@
 
 program:
 	CONST cdeclarations VAR vdeclarations PBEGIN commands END {
-		std::cerr
-			<< ">> commands: "
-			<< $6 << "\n";
-		
+		std::string buf = machine_code.str();
 		std::uint32_t totalLength = 0;
+
+		std::cout << buf;		
+		totalLength += (std::uint32_t) std::count(buf.begin(), buf.end(), '\n');
 		for (Command *cmd : $6->cmds)
 		{
 			std::uint32_t length = 0;
-			std::cerr
-				<< ">> command: " << Command::str(cmd->type) << "\n";
-			if ((*cmd)(std::cout, &length, symtbl, totalLength) != 0) return ERROR;
-		}
+			std::cerr << ">> command: " << Command::str(cmd->type) << "\n";
 		
-		std::cout
-			<< code::cmd::HALT << "\n";
+			if ((*cmd)(std::cout, &length, symtbl, totalLength) != 0) return ERROR;
+			totalLength += length;
+		}
+
+		std::cout << code::cmd::HALT << "\n";
+		totalLength++;
+
+		std::cerr
+				<< ">> kompilacja zakończona, program wynikowy ma " << totalLength << " instrukcji\n";
 	}
 ;
 
