@@ -35,6 +35,7 @@ add_library (genvm
 		${SOURCEDIR}/code/generate_number.cc
 		${SOURCEDIR}/code/copy_value.cc
 		${SOURCEDIR}/code/add.cc
+		${SOURCEDIR}/code/subtract.cc
 	)
 
 add_executable (kompilator

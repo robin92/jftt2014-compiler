@@ -1,0 +1,9 @@
+(* powinno wypisać 0 *)
+CONST
+    trzy = 3, sto = 100
+VAR
+    a
+BEGIN
+    a := trzy - sto;
+    WRITE a;
+END

@@ -8,6 +8,8 @@
 	#include <cassert>
 	#include <cstdio>
 
+	#include <gmpxx.h>
+
 	#include "SymbolTable.hh"
 	#include "code/code.hh"
 %}
@@ -328,7 +330,7 @@ parse_complex_expr(const ISymbolTable::Entry& entry, const Expression& expr)
 			{
 				std::string firstId = std::get<0>(expr.complex),
 						secondId = std::get<1>(expr.complex);
-				
+
 				if ( not(symtbl->contains(firstId)) )
 				{
 					std::ostringstream oss;
@@ -336,7 +338,7 @@ parse_complex_expr(const ISymbolTable::Entry& entry, const Expression& expr)
 					yyerror(oss.str());
 					return 1;
 				}
-				
+
 				if ( not(symtbl->contains(secondId)) )
 				{
 					std::ostringstream oss;
@@ -353,16 +355,65 @@ parse_complex_expr(const ISymbolTable::Entry& entry, const Expression& expr)
 						<< code::cmd::STORE << " " << entry.current_addr << "\n";
 			}
 			break;
-		
-		// TODO
+
 		case Expression::Operation::SUBTRACT:
+			{
+				std::string firstId = std::get<0>(expr.complex),
+						secondId = std::get<1>(expr.complex);
+
+				if ( not(symtbl->contains(firstId)) )
+				{
+					std::ostringstream oss;
+					oss << "identifier '" << firstId << "' has not been declared";
+					yyerror(oss.str());
+					return 1;
+				}
+
+				if ( not(symtbl->contains(secondId)) )
+				{
+					std::ostringstream oss;
+					oss << "identifier '" << secondId << "' has not been declared";
+					yyerror(oss.str());
+					return 2;
+				}
+
+				ISymbolTable::Entry first = symtbl->get(firstId),
+				second = symtbl->get(secondId);
+
+				// optymalizacja: oba symbole to stałe, jeśli a <= b to a - b <= 0
+				// a w maszyna nie obsługuje liczb < 0, koszt wyzerowania jest mniejszy
+				// niż koszt odejmowania
+				bool done = false;
+				if (first.has_value and second.has_value)
+				{
+					mpz_class a(first.value), b(second.value);
+					if ( a <= b )
+					{
+						machine_code
+								<< code::cmd::ZERO << "\n";
+						done = true;
+					}
+				}
+
+				if (not(done))
+				{
+					machine_code
+							<< code::subtract(first.current_addr, second.current_addr);
+				}
+
+				machine_code
+						<< code::cmd::STORE << " " << entry.current_addr << "\n";
+			}
+			break;
+
+		// TODO
 		case Expression::Operation::MULTIPLY:
 		case Expression::Operation::DIVIDE:
 		case Expression::Operation::MODULO:
 		default:
 			break;
 	}
-	
+
 	return 0;
 }
 

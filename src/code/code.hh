@@ -31,11 +31,17 @@ namespace code
 	std::string
 	generate_number(const std::string& decnum);
 
+	// FIXME: powinna przyjmować ISymbolTable::Entry
 	std::string
 	copy_value(const std::uint32_t& dst, const std::uint32_t& src);
-	
+
+	// FIXME: powinna przyjmować ISymbolTable::Entry
 	std::string
 	add(const std::uint32_t& a, const std::uint32_t& b);
+
+	// FIXME: powinna przyjmować ISymbolTable::Entry
+	std::string
+	subtract(const std::uint32_t& a, const std::uint32_t& b);
 }	// namespace code
 
 #endif	// COMPILER_CODE_HH_
