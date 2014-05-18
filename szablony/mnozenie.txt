@@ -1,0 +1,30 @@
+; mnoznik znajduje sie w p = 0
+; mnozna znajduje sie w p = 1
+; wynik znajduje sie w p = 2
+
+; przygotowanie wyniku
+ZERO
+STORE 2
+JUMP @main
+
+{{ jedynka }}
+LOAD 2
+ADD 0
+STORE 2
+JUMP @step
+
+{{ main }}
+LOAD 1
+JODD @jedynka
+
+{{ step }}
+LOAD 1
+SHR
+STORE 1
+LOAD 0
+SHL
+STORE 0
+LOAD 1
+JG @main
+
+HALT
