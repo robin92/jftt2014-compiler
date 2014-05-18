@@ -13,13 +13,19 @@
 %}
 
 %code requires {
-	#include "expression.hh"
+	#include "Expression.hh"
+	#include "Condition.hh"
+	#include "Command.hh"
+	#include "Commands.hh"
 }
 
 %union {
 	char *id;
 	char *bignum;
 	Expression *expr;
+	Condition *condition;
+	Command *command;
+	Commands *commands;
 }
  
 %{
@@ -42,15 +48,12 @@
 	static ISymbolTable *symtbl = new SymbolTable();
 
 	static inline std::uint32_t next_mem_addr();
-	
-	//
-	// parser methods
-	//
-	
-	std::int32_t parse_complex_expr(const ISymbolTable::Entry& entry, const Expression& expr);
 %}
 
 %type <expr> expression
+%type <command> command
+%type <commands> commands;
+%type <condition> condition;
 
 %token <id> IDENTIFIER
 %token <bignum> NUM
@@ -94,18 +97,21 @@
 
 program:
 	CONST cdeclarations VAR vdeclarations PBEGIN commands END {
-		std::ostringstream oss;		
-		for (auto symbol : symtbl->all())
+		std::cerr
+			<< ">> commands: "
+			<< $6 << "\n";
+		
+		std::uint32_t totalLength = 0;
+		for (Command *cmd : $6->cmds)
 		{
-			oss << "(" << *symbol.first << ", ";
-			symbol.second->has_value ? oss << symbol.second->value : oss << "null";
-			oss << ") ";
+			std::uint32_t length = 0;
+			std::cerr
+				<< ">> command: " << Command::str(cmd->type) << "\n";
+			if ((*cmd)(std::cout, &length, symtbl, totalLength) != 0) return ERROR;
 		}
-	
-		std::cerr << ">> symbols: " << oss.str() << "\n";
-
-		std::cout << machine_code.str()
-				<< "HALT\n";
+		
+		std::cout
+			<< code::cmd::HALT << "\n";
 	}
 ;
 
@@ -162,89 +168,43 @@ vdeclarations:
 ;
 
 commands:
-	commands command
-|	%empty
+	commands command {
+		$1->cmds.push_back($2);
+	}
+|	%empty {
+		Commands *commands = new Commands();
+		$$ = commands;
+	}
 ;
 
 command:
 	IDENTIFIER OPERATOR_ASSIGNMENT expression SEMICOLON {
-		if ( not(symtbl->contains($1)) )
-		{
-			std::ostringstream oss;
-			oss << "identifier '" << $1 << "' has not been declared";
-			yyerror(oss.str());
-			return ERROR;
-		}
-		
-		ISymbolTable::Entry entry = symtbl->get($1);
-		if (entry.has_value)
-		{
-			std::ostringstream oss;
-			oss << "identifier '" << $1 << "' is declared constant";
-			yyerror(oss.str());
-			return ERROR;
-		}
-		
-		fprintf(stderr, ">> expression = '%d'\n", $3->type);
-		
-		switch ($3->type)
-		{
-			// przypisywanie zmiennej wartości numerycznej
-			case Expression::Type::NUMBER:
-				{
-					machine_code
-						<< code::generate_number($3->number)
-						<< code::cmd::STORE << " " << entry.current_addr << "\n";
-				}
-				break;
-
-			// przypisywanie zmiennej wartości stałej lub innej zmiennej
-			case Expression::Type::IDENTIFIER:
-				{
-					if ( not(symtbl->contains($3->identifier)) )
-					{
-						std::ostringstream oss;
-						oss << "identifier '" << $3->identifier << "' has not been declared";
-						yyerror(oss.str());
-						return ERROR;
-					}
-				
-					ISymbolTable::Entry remoteEntry = symtbl->get($3->identifier);
-					machine_code
-							<< code::copy_value(entry, remoteEntry);	
-				}
-				break;
-
-			// TODO
-			// przypisywanie zmiennej wartości wyrażenia arytmetycznego
-			case Expression::Type::COMPLEX:
-				if (parse_complex_expr(entry, *$3) != 0) return ERROR;
-				break;
-
-			default:
-				break;
-		}
-		
-		if ($3) delete $3;
-		$3 = nullptr;
+		Command *command = new Command();
+		command->type = Command::Type::ASSIGNMENT;
+		command->identifier = $1;
+		command->expr = $3;
+		$$ = command;
 	}
-|	IF condition THEN commands ELSE commands END
-|	WHILE condition DO commands END
-|	READ IDENTIFIER SEMICOLON
+|	IF condition THEN commands ELSE commands END {
+		Command *command = new Command();
+		command->type = Command::Type::IF;
+		$$ = command;
+	}
+|	WHILE condition DO commands END {
+		Command *command = new Command();
+		command->type = Command::Type::WHILE;
+		$$ = command;
+	}
+|	READ IDENTIFIER SEMICOLON {
+		Command *command = new Command();
+		command->type = Command::Type::READ;
+		$$ = command;
+	}
 |	WRITE IDENTIFIER SEMICOLON {
-		fprintf(stderr, ">> wypisywanie wartości\n");
-		
-		if ( not(symtbl->contains($2)) )
-		{
-			std::ostringstream oss;
-			oss << "identifier '" << $2 << "' has not been declared";
-			yyerror(oss.str());
-			return ERROR;
-		}
-		
-		ISymbolTable::Entry entry = symtbl->get($2);
-		machine_code
-			<< code::cmd::PRINT << " " << entry.current_addr << "\n";
+		Command *command = new Command();
+		command->type = Command::Type::WRITE;
+		command->identifier = $2;
+		$$ = command;
 	}
 ;
 
@@ -294,12 +254,36 @@ expression:
 ;
 
 condition:
-	IDENTIFIER OPERATOR_EQ IDENTIFIER
-|	IDENTIFIER OPERATOR_NE IDENTIFIER
-|	IDENTIFIER OPERATOR_LT IDENTIFIER
-|	IDENTIFIER OPERATOR_GT IDENTIFIER
-|	IDENTIFIER OPERATOR_LE IDENTIFIER
-|	IDENTIFIER OPERATOR_GE IDENTIFIER
+	IDENTIFIER OPERATOR_EQ IDENTIFIER {
+		Condition *condition = new Condition();
+		condition->type = Condition::Type::EQ;
+		$$ = condition;
+	}
+|	IDENTIFIER OPERATOR_NE IDENTIFIER {
+		Condition *condition = new Condition();
+		condition->type = Condition::Type::NE;
+		$$ = condition;
+	}
+|	IDENTIFIER OPERATOR_LT IDENTIFIER {
+		Condition *condition = new Condition();
+		condition->type = Condition::Type::LT;
+		$$ = condition;
+	}
+|	IDENTIFIER OPERATOR_GT IDENTIFIER {
+		Condition *condition = new Condition();
+		condition->type = Condition::Type::GT;
+		$$ = condition;
+	}
+|	IDENTIFIER OPERATOR_LE IDENTIFIER {
+		Condition *condition = new Condition();
+		condition->type = Condition::Type::LE;
+		$$ = condition;
+	}
+|	IDENTIFIER OPERATOR_GE IDENTIFIER {
+		Condition *condition = new Condition();
+		condition->type = Condition::Type::GE;
+		$$ = condition;
+	}
 ;
 
 %%
@@ -317,59 +301,5 @@ next_mem_addr()
 {
 	static std::uint32_t addr = 3;	// pierwsze 3 sa tansze wiec lepsze do obliczen
 	return addr++;
-}
-
-std::int32_t
-parse_complex_expr(const ISymbolTable::Entry& entry, const Expression& expr)
-{
-	std::string firstId = std::get<0>(expr.complex),
-			secondId = std::get<1>(expr.complex);
-
-	if ( not(symtbl->contains(firstId)) )
-	{
-		std::ostringstream oss;
-		oss << "identifier '" << firstId << "' has not been declared";
-		yyerror(oss.str());
-		return 1;
-	}
-
-	if ( not(symtbl->contains(secondId)) )
-	{
-		std::ostringstream oss;
-		oss << "identifier '" << secondId << "' has not been declared";
-		yyerror(oss.str());
-		return 2;
-	}
-
-	ISymbolTable::Entry first = symtbl->get(firstId),
-		second = symtbl->get(secondId);
-
-	switch (std::get<2>(expr.complex))
-	{
-		case Expression::Operation::ADD:
-			{
-				machine_code
-						<< code::add(first, second)
-						<< code::cmd::STORE << " " << entry.current_addr << "\n";
-			}
-			break;
-
-		case Expression::Operation::SUBTRACT:
-			{
-				machine_code
-						<< code::subtract(first, second)
-						<< code::cmd::STORE << " " << entry.current_addr << "\n";
-			}
-			break;
-
-		// TODO
-		case Expression::Operation::MULTIPLY:
-		case Expression::Operation::DIVIDE:
-		case Expression::Operation::MODULO:
-		default:
-			break;
-	}
-
-	return 0;
 }
 
