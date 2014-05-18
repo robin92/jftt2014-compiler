@@ -144,26 +144,8 @@ handle_assignment(
 		Command* self)
 {
 	std::ostringstream machine_code;
-	
-	if ( not(symtbl->contains(self->identifier)) )
-	{
-		std::ostringstream oss;
-		oss << "identifier '" << self->identifier << "' has not been declared";
-		yyerror(oss.str());
-		return 1;
-	}
-
 	ISymbolTable::Entry entry = symtbl->get(self->identifier);
-	if (entry.has_value)
-	{
-		std::ostringstream oss;
-		oss << "identifier '" << self->identifier << "' is declared constant";
-		yyerror(oss.str());
-		return 2;
-	}
-
-	fprintf(stderr, ">> expression = '%d'\n", self->expr->type);
-
+	
 	switch (self->expr->type)
 	{
 		// przypisywanie zmiennej wartości numerycznej
@@ -178,13 +160,6 @@ handle_assignment(
 		// przypisywanie zmiennej wartości stałej lub innej zmiennej
 		case Expression::Type::IDENTIFIER:
 			{
-				if ( not(symtbl->contains(self->expr->identifier)) )
-				{
-					std::ostringstream oss;
-					oss << "identifier '" << self->expr->identifier << "' has not been declared";
-					yyerror(oss.str());
-					return 3;
-				}
 				ISymbolTable::Entry remoteEntry = symtbl->get(self->expr->identifier);
 				machine_code
 						<< code::copy_value(entry, remoteEntry);	
@@ -216,23 +191,7 @@ handle_read(
 {
 	std::ostringstream machine_code;
 
-	if ( not(symtbl->contains(self->identifier)) )
-	{
-		std::ostringstream oss;
-		oss << "identifier '" << self->identifier << "' has not been declared";
-		yyerror(oss.str());
-		return 1;
-	}
-	
 	ISymbolTable::Entry entry = symtbl->get(self->identifier);
-	
-	if (entry.has_value)
-	{
-		std::ostringstream oss;
-		oss << "can't READ value, identifier '" << self->identifier << "' is declared constant";
-		yyerror(oss.str());
-		return 2;
-	}
 	
 	machine_code
 			<< code::cmd::SCAN << " " << entry.current_addr << "\n";			
@@ -252,14 +211,6 @@ handle_write(
 {
 	std::ostringstream machine_code;
 
-	if ( not(symtbl->contains(self->identifier)) )
-	{
-		std::ostringstream oss;
-		oss << "identifier '" << self->identifier << "' has not been declared";
-		yyerror(oss.str());
-		return 1;
-	}
-
 	ISymbolTable::Entry entry = symtbl->get(self->identifier);
 	machine_code
 			<< code::cmd::PRINT << " " << entry.current_addr << "\n";			
@@ -274,22 +225,6 @@ parse_complex_expr(std::ostream& machine_code, ISymbolTable* symtbl, const ISymb
 {
 	std::string firstId = std::get<0>(expr.complex),
 			secondId = std::get<1>(expr.complex);
-
-	if ( not(symtbl->contains(firstId)) )
-	{
-		std::ostringstream oss;
-		oss << "identifier '" << firstId << "' has not been declared";
-		yyerror(oss.str());
-		return 1;
-	}
-
-	if ( not(symtbl->contains(secondId)) )
-	{
-		std::ostringstream oss;
-		oss << "identifier '" << secondId << "' has not been declared";
-		yyerror(oss.str());
-		return 2;
-	}
 
 	ISymbolTable::Entry first = symtbl->get(firstId),
 		second = symtbl->get(secondId);

@@ -49,6 +49,8 @@
 	static ISymbolTable *symtbl = new SymbolTable();
 
 	static inline std::uint32_t next_mem_addr();
+	
+	static inline bool is_identifier(const std::string& id);
 %}
 
 %type <expr> expression
@@ -184,6 +186,16 @@ commands:
 
 command:
 	IDENTIFIER OPERATOR_ASSIGNMENT expression SEMICOLON {
+		if ( not(is_identifier($1)) ) return ERROR;
+
+		if (symtbl->get($1).has_value)
+		{
+			std::ostringstream oss;
+			oss << "identifier '" << $1 << "' is declared constant";
+			yyerror(oss.str());
+			return ERROR;
+		}
+
 		Command *command = new Command();
 		command->type = Command::Type::ASSIGNMENT;
 		command->identifier = $1;
@@ -201,12 +213,24 @@ command:
 		$$ = command;
 	}
 |	READ IDENTIFIER SEMICOLON {
+		if ( not(is_identifier($2)) ) return ERROR;
+		
+		if (symtbl->get($2).has_value)
+		{
+			std::ostringstream oss;
+			oss << "can't READ value, identifier '" << $2 << "' is declared constant";
+			yyerror(oss.str());
+			return ERROR;
+		}
+
 		Command *command = new Command();
 		command->type = Command::Type::READ;
 		command->identifier = $2;
 		$$ = command;
 	}
 |	WRITE IDENTIFIER SEMICOLON {
+		if ( not(is_identifier($2)) ) return ERROR;
+
 		Command *command = new Command();
 		command->type = Command::Type::WRITE;
 		command->identifier = $2;
@@ -222,36 +246,48 @@ expression:
 		$$ = expr;
 	}
 |	IDENTIFIER {
+		if ( not(is_identifier($1)) ) return ERROR;
+	
 		Expression *expr = new Expression();
 		expr->type = Expression::Type::IDENTIFIER;
 		expr->identifier = $1;
 		$$ = expr;
 	}
 |	IDENTIFIER OPERATOR_ADD IDENTIFIER {
+		if ( not(is_identifier($1)) or not(is_identifier($3)) ) return ERROR;
+
 		Expression *expr = new Expression();
 		expr->type = Expression::Type::COMPLEX;
 		expr->complex = std::make_tuple($1, $3, Expression::Operation::ADD);
 		$$ = expr;
 	}
 |	IDENTIFIER OPERATOR_SUBTRACT IDENTIFIER {
+		if ( not(is_identifier($1)) or not(is_identifier($3)) ) return ERROR;
+
 		Expression *expr = new Expression();
 		expr->type = Expression::Type::COMPLEX;
 		expr->complex = std::make_tuple($1, $3, Expression::Operation::SUBTRACT);
 		$$ = expr;
 	}
 |	IDENTIFIER OPERATOR_MULTIPLY IDENTIFIER {
+		if ( not(is_identifier($1)) or not(is_identifier($3)) ) return ERROR;
+
 		Expression *expr = new Expression();
 		expr->type = Expression::Type::COMPLEX;
 		expr->complex = std::make_tuple($1, $3, Expression::Operation::MULTIPLY);
 		$$ = expr;
 	}
 |	IDENTIFIER OPERATOR_DIVIDE IDENTIFIER {
+		if ( not(is_identifier($1)) or not(is_identifier($3)) ) return ERROR;
+
 		Expression *expr = new Expression();
 		expr->type = Expression::Type::COMPLEX;
 		expr->complex = std::make_tuple($1, $3, Expression::Operation::DIVIDE);
 		$$ = expr;
 	}
 |	IDENTIFIER OPERATOR_MODULO IDENTIFIER {
+		if ( not(is_identifier($1)) or not(is_identifier($3)) ) return ERROR;
+
 		Expression *expr = new Expression();
 		expr->type = Expression::Type::COMPLEX;
 		expr->complex = std::make_tuple($1, $3, Expression::Operation::MODULO);
@@ -307,5 +343,19 @@ next_mem_addr()
 {
 	static std::uint32_t addr = 3;	// pierwsze 3 sa tansze wiec lepsze do obliczen
 	return addr++;
+}
+
+bool
+is_identifier(const std::string& id)
+{
+	if ( not(symtbl->contains(id)) )
+	{
+		std::ostringstream oss;
+		oss << "identifier '" << id << "' has not been declared";
+		yyerror(oss.str());
+		return false;
+	}
+	
+	return true;
 }
 
