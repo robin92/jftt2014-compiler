@@ -324,32 +324,32 @@ next_mem_addr()
 std::int32_t
 parse_complex_expr(const ISymbolTable::Entry& entry, const Expression& expr)
 {
+	std::string firstId = std::get<0>(expr.complex),
+			secondId = std::get<1>(expr.complex);
+
+	if ( not(symtbl->contains(firstId)) )
+	{
+		std::ostringstream oss;
+		oss << "identifier '" << firstId << "' has not been declared";
+		yyerror(oss.str());
+		return 1;
+	}
+
+	if ( not(symtbl->contains(secondId)) )
+	{
+		std::ostringstream oss;
+		oss << "identifier '" << secondId << "' has not been declared";
+		yyerror(oss.str());
+		return 2;
+	}
+
+	ISymbolTable::Entry first = symtbl->get(firstId),
+		second = symtbl->get(secondId);
+
 	switch (std::get<2>(expr.complex))
 	{
 		case Expression::Operation::ADD:
 			{
-				std::string firstId = std::get<0>(expr.complex),
-						secondId = std::get<1>(expr.complex);
-
-				if ( not(symtbl->contains(firstId)) )
-				{
-					std::ostringstream oss;
-					oss << "identifier '" << firstId << "' has not been declared";
-					yyerror(oss.str());
-					return 1;
-				}
-
-				if ( not(symtbl->contains(secondId)) )
-				{
-					std::ostringstream oss;
-					oss << "identifier '" << secondId << "' has not been declared";
-					yyerror(oss.str());
-					return 2;
-				}
-
-				ISymbolTable::Entry first = symtbl->get(firstId),
-						second = symtbl->get(secondId);
-
 				machine_code
 						<< code::add(first.current_addr, second.current_addr)
 						<< code::cmd::STORE << " " << entry.current_addr << "\n";
@@ -358,28 +358,6 @@ parse_complex_expr(const ISymbolTable::Entry& entry, const Expression& expr)
 
 		case Expression::Operation::SUBTRACT:
 			{
-				std::string firstId = std::get<0>(expr.complex),
-						secondId = std::get<1>(expr.complex);
-
-				if ( not(symtbl->contains(firstId)) )
-				{
-					std::ostringstream oss;
-					oss << "identifier '" << firstId << "' has not been declared";
-					yyerror(oss.str());
-					return 1;
-				}
-
-				if ( not(symtbl->contains(secondId)) )
-				{
-					std::ostringstream oss;
-					oss << "identifier '" << secondId << "' has not been declared";
-					yyerror(oss.str());
-					return 2;
-				}
-
-				ISymbolTable::Entry first = symtbl->get(firstId),
-				second = symtbl->get(secondId);
-
 				// optymalizacja: oba symbole to stałe, jeśli a <= b to a - b <= 0
 				// a w maszyna nie obsługuje liczb < 0, koszt wyzerowania jest mniejszy
 				// niż koszt odejmowania
