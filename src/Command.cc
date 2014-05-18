@@ -30,7 +30,16 @@ handle_assignment(
 		ISymbolTable* symtbl,
 		const std::uint32_t& offset,
 		Command* self);
-		
+
+static
+std::int32_t
+handle_read(
+		std::string *out,
+		std::uint32_t* length,
+		ISymbolTable* symtbl,
+		const std::uint32_t& offset,
+		Command* self);
+
 static
 std::int32_t
 handle_write(
@@ -86,6 +95,12 @@ Command::generate(
 			}
 			break;
 
+		case Type::READ:
+			{
+				err = handle_read(&tmp, length, symtbl, offset, this);
+			}
+			break;
+
 		case Type::WRITE:
 			{
 				err = handle_write(&tmp, length, symtbl, offset, this);	
@@ -94,7 +109,6 @@ Command::generate(
 
 		case Type::IF:
 		case Type::WHILE:
-		case Type::READ:
 		default:
 			break;
 	}
@@ -193,6 +207,42 @@ handle_assignment(
 }
 
 std::int32_t
+handle_read(
+		std::string *out,
+		std::uint32_t* length,
+		ISymbolTable* symtbl,
+		const std::uint32_t& offset,
+		Command* self)
+{
+	std::ostringstream machine_code;
+
+	if ( not(symtbl->contains(self->identifier)) )
+	{
+		std::ostringstream oss;
+		oss << "identifier '" << self->identifier << "' has not been declared";
+		yyerror(oss.str());
+		return 1;
+	}
+	
+	ISymbolTable::Entry entry = symtbl->get(self->identifier);
+	
+	if (entry.has_value)
+	{
+		std::ostringstream oss;
+		oss << "can't READ value, identifier '" << self->identifier << "' is declared constant";
+		yyerror(oss.str());
+		return 2;
+	}
+	
+	machine_code
+			<< code::cmd::SCAN << " " << entry.current_addr << "\n";			
+
+	*out = machine_code.str();
+	*length = count_lines(*out);
+	return 0;
+}
+
+std::int32_t
 handle_write(
 		std::string *out,
 		std::uint32_t* length,
@@ -200,8 +250,6 @@ handle_write(
 		const std::uint32_t& offset,
 		Command* self)
 {
-	fprintf(stderr, ">> wypisywanie wartości\n");
-
 	std::ostringstream machine_code;
 
 	if ( not(symtbl->contains(self->identifier)) )

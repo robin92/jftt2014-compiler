@@ -203,6 +203,7 @@ command:
 |	READ IDENTIFIER SEMICOLON {
 		Command *command = new Command();
 		command->type = Command::Type::READ;
+		command->identifier = $2;
 		$$ = command;
 	}
 |	WRITE IDENTIFIER SEMICOLON {
