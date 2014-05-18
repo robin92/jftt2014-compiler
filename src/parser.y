@@ -27,9 +27,7 @@
 	// scanner objects
 	//
 
-	extern
-	std::int32_t
-	yylex();
+	extern std::int32_t yylex();
 	
 	extern std::int32_t yylineno;
 
@@ -37,8 +35,7 @@
 	// parser objects
 	//
 
-	void 
-	yyerror(const std::string& str);
+	void yyerror(const std::string& str);
 
 	static std::ostringstream machine_code;
 
@@ -147,7 +144,11 @@ vdeclarations:
 			return ERROR;
 		}
 		
+		ISymbolTable::Entry entry;
+		entry.current_addr = next_mem_addr();
+		
 		symtbl->insert($2);
+		symtbl->update($2, entry);
 		
 		assert(symtbl->contains($2));
 	}
@@ -172,15 +173,42 @@ command:
 		ISymbolTable::Entry entry = symtbl->get($1);
 		fprintf(stderr, ">> expression = '%d'\n", $3->type);
 		
-		// TODO
 		switch ($3->type)
 		{
 			case Expression::Type::NUMBER:
+				{
+					machine_code
+						<< code::generate_number($3->number)
+						<< code::cmd::STORE << " " << entry.current_addr << "\n";
+				}
+				break;
+
 			case Expression::Type::IDENTIFIER:
+				{
+					if ( not(symtbl->contains($3->identifier)) )
+					{
+						std::ostringstream oss;
+						oss << "identifier '" << $3->identifier << "' has not been declared";
+						yyerror(oss.str());
+						return ERROR;
+					}
+				
+					ISymbolTable::Entry remoteEntry = symtbl->get($3->identifier);
+					machine_code
+							<< code::copy_value(entry.current_addr, remoteEntry.current_addr);	
+				}
+				break;
+
+			// TODO
 			case Expression::Type::COMPLEX:
+				break;
+
 			default:
 				break;
 		}
+		
+		if ($3) delete $3;
+		$3 = nullptr;
 	}
 |	IF condition THEN commands ELSE commands END
 |	WHILE condition DO commands END

@@ -30,6 +30,9 @@ namespace code
 
 	std::string
 	generate_number(const std::string& decnum);
+
+	std::string
+	copy_value(const std::uint32_t& dst, const std::uint32_t& src);
 }	// namespace code
 
 #endif	// COMPILER_CODE_HH_
