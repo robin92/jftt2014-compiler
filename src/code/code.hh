@@ -41,6 +41,11 @@ namespace code
 
 	std::string
 	subtract(const ISymbolTable::Entry& a, const ISymbolTable::Entry& b);
+	
+	std::string
+	multiply(const ISymbolTable::Entry& a,
+			const ISymbolTable::Entry& b,
+			const std::uint32_t offset = 0);
 }	// namespace code
 
 #endif	// COMPILER_CODE_HH_
