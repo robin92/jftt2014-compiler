@@ -14,7 +14,7 @@ public:
 			NULLADDR	= -2,
 			REG_A		= -1,
 		};
-	
+
 		bool has_value {false};
 		std::string value {};
 		std::int32_t current_addr {NULLADDR};
@@ -26,14 +26,14 @@ public:
 	virtual void insert(const std::string& symbol) = 0;
 
 	virtual void update(const std::string& symbol, const Entry& entry) = 0;
-	
+
 
 
 
 	virtual Entry get(const std::string& symbol) const = 0;
-	
+
 	virtual SymbolList all() const = 0;
-	
+
 	virtual Entry operator[] (const std::string& symbol) const;
 
 	virtual bool contains(const std::string& symbol) const;

@@ -22,7 +22,7 @@ public:
 
 
 	virtual Entry get(const std::string& symbol) const;
-	
+
 	virtual SymbolList all() const;
 
 private:

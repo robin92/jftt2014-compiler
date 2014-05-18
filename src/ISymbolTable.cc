@@ -17,7 +17,7 @@ ISymbolTable::contains(const std::string& symbol) const
 	{
 		return false;
 	}
-	
+
 	return true;
 }
 

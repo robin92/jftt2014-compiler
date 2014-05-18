@@ -13,7 +13,7 @@ std::string
 code::copy_value(const std::uint32_t& dst, const std::uint32_t& src)
 {
 	std::ostringstream machine_code;
-	
+
 	machine_code
 			<< LOAD << " " << src << "\n"
 			<< STORE << " " << dst << "\n";

@@ -13,7 +13,7 @@ struct Expression
 		DIVIDE,
 		MODULO,
 	};
-		
+
 	enum class Type : std::uint8_t
 	{
 		UNDEFINED = 0,

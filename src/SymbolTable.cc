@@ -16,7 +16,7 @@ SymbolTable::insert(const std::string& symbol)
 
 void
 SymbolTable::update(const std::string& symbol, const SymbolTable::Entry& entry)
-{	
+{
 	_symbols.at(symbol) = entry;
 }
 
@@ -32,12 +32,12 @@ SymbolTable::SymbolList
 SymbolTable::all() const
 {
 	SymbolList list;
-	
+
 	for (auto it = _symbols.cbegin(); it != _symbols.cend(); it++)
 	{
 		list.push_back(std::pair<const std::string*, const Entry*>(&it->first, &it->second));
 	}
-	
+
 	return list;
 }
 

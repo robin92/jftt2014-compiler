@@ -17,7 +17,7 @@ get_leftmost_bit(std::string* binnum)
 {
 	char c = (*binnum)[0];
 	*binnum = binnum->length() >= 2 ? binnum->substr(1) : "0";
-		
+
 	return c == '0' ? 0 : 1;
 }
 
