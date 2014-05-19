@@ -55,7 +55,8 @@ parse_complex_expr(
 		std::ostream& machine_code,
 		ISymbolTable* symtbl,
 		const ISymbolTable::Entry& entry,
-		const Expression& expr);
+		const Expression& expr,
+		const std::uint32_t& offset = 0);
 
 
 
@@ -169,7 +170,7 @@ handle_assignment(
 			// TODO
 			// przypisywanie zmiennej wartości wyrażenia arytmetycznego
 			case Expression::Type::COMPLEX:
-				if (parse_complex_expr(machine_code, symtbl, entry, *self->expr) != 0) return 4;
+				if (parse_complex_expr(machine_code, symtbl, entry, *self->expr, offset) != 0) return 4;
 				break;
 
 			default:
@@ -221,7 +222,12 @@ handle_write(
 }
 
 std::int32_t
-parse_complex_expr(std::ostream& machine_code, ISymbolTable* symtbl, const ISymbolTable::Entry& entry, const Expression& expr)
+parse_complex_expr(
+		std::ostream& machine_code,
+		ISymbolTable* symtbl,
+		const ISymbolTable::Entry& entry,
+		const Expression& expr,
+		const std::uint32_t& offset)
 {
 	std::string firstId = std::get<0>(expr.complex),
 			secondId = std::get<1>(expr.complex);
@@ -247,8 +253,15 @@ parse_complex_expr(std::ostream& machine_code, ISymbolTable* symtbl, const ISymb
 			}
 			break;
 
-		// TODO
 		case Expression::Operation::MULTIPLY:
+			{
+				machine_code
+						<< code::multiply(first, second, offset)
+						<< code::cmd::STORE << " " << entry.current_addr << "\n";
+			}
+			break;
+		
+		// TODO
 		case Expression::Operation::DIVIDE:
 		case Expression::Operation::MODULO:
 		default:
