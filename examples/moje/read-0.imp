@@ -1,0 +1,7 @@
+CONST
+VAR
+    a
+BEGIN
+    READ a;
+    WRITE a;
+END

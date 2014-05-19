@@ -1,0 +1,15 @@
+; a = b
+;	sprawdzanie poprzez a - b
+;	p[0] = a, p[1] = b
+;	jeśli a = b -> (A) = 1, wpp. (A) = 0
+		LOAD 0
+		SUB 1
+		JG @false
+		LOAD 1
+		SUB 0
+		JG @false
+		INC
+		JUMP @koniec
+false:	ZERO
+koniec:	---
+

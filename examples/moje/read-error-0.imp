@@ -1,0 +1,10 @@
+(* program powinien mieć błąd podczas kompilowania
+ *  błąd: nie można READ wartości do stałej
+ *)
+CONST
+    a = 666
+VAR
+BEGIN
+    READ a;
+    WRITE a;
+END
