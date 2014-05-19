@@ -34,6 +34,7 @@ BISON_TARGET (parser ${SOURCEDIR}/parser.y ${SOURCEDIR}/parser.tab.cc)
 add_library (genvm
 		${SOURCEDIR}/code/generate_number.cc
 		${SOURCEDIR}/code/copy_value.cc
+		${SOURCEDIR}/code/compare_eq.cc
 		${SOURCEDIR}/code/add.cc
 		${SOURCEDIR}/code/subtract.cc
 		${SOURCEDIR}/code/multiply.cc

@@ -51,11 +51,28 @@ handle_write(
 
 static
 std::int32_t
+handle_if(
+		std::string *out,
+		std::uint32_t* length,
+		ISymbolTable* symtbl,
+		const std::uint32_t& offset,
+		Command* self);
+
+static
+std::int32_t
 parse_complex_expr(
 		std::ostream& machine_code,
 		ISymbolTable* symtbl,
 		const ISymbolTable::Entry& entry,
 		const Expression& expr,
+		const std::uint32_t& offset = 0);
+		
+static inline
+std::int32_t parse_commands(
+		std::string* out,
+		std::uint32_t* length,
+		Commands *cmds,
+		ISymbolTable *symtbl,
 		const std::uint32_t& offset = 0);
 
 
@@ -109,6 +126,11 @@ Command::generate(
 			break;
 
 		case Type::IF:
+			{
+				err = handle_if(&tmp, length, symtbl, offset, this);
+			}
+			break;
+
 		case Type::WHILE:
 		default:
 			break;
@@ -222,6 +244,56 @@ handle_write(
 }
 
 std::int32_t
+handle_if(
+		std::string *out,
+		std::uint32_t* length,
+		ISymbolTable* symtbl,
+		const std::uint32_t& offset,
+		Command* self)
+{
+	std::ostringstream machine_code;
+
+	ISymbolTable::Entry first = symtbl->get(self->cond->ids.first),
+			second = symtbl->get(self->cond->ids.second);
+
+	switch (self->cond->type)
+	{
+		case Condition::Type::EQ:
+			machine_code << code::compare_eq(first, second, offset);
+			break;
+		
+		case Condition::Type::NE:
+		case Condition::Type::LT:
+		case Condition::Type::GT:
+		case Condition::Type::LE:
+		case Condition::Type::GE:
+		default:
+			break;
+	}
+
+	// TODO: wymaga rzetelnych testów
+	std::string thenClause, elseClause;
+	std::uint32_t condLen = count_lines(machine_code.str());
+	std::uint32_t thenLen = 0, elseLen = 0;
+	std::int32_t thenErr = parse_commands(&thenClause, &thenLen, self->thencmds, symtbl, offset + condLen + 1),	
+			elseErr = parse_commands(&elseClause, &elseLen, self->elsecmds, symtbl, offset + condLen + thenLen + 2);
+
+	machine_code
+//			<< code::cmd::JZ << " " << "@next_else_clause" << "\n"
+//			<< "[THEN CLAUSE]\n"
+			<< code::cmd::JZ << " " << condLen + offset + thenLen + 2 << "\n"
+			<< thenClause
+//			<< code::cmd::JUMP << " " << "@after_next_else" << "\n"
+//			<< "[ELSE CLAUSE]\n";
+			<< code::cmd::JUMP << " " << offset + condLen + 1 + thenLen + 1 + elseLen << "\n"
+			<< elseClause;
+
+	*out = machine_code.str();
+	*length = count_lines(*out);
+	return 0;
+}
+
+std::int32_t
 parse_complex_expr(
 		std::ostream& machine_code,
 		ISymbolTable* symtbl,
@@ -267,6 +339,32 @@ parse_complex_expr(
 		default:
 			break;
 	}
+
+	return 0;
+}
+
+std::int32_t
+parse_commands(
+		std::string* out,
+		std::uint32_t* length,
+		Commands *cmds,
+		ISymbolTable *symtbl,
+		const std::uint32_t& offset)
+{
+	std::ostringstream oss;
+
+	std::uint32_t totalLength = 0;
+	for (Command *cmd : cmds->cmds)
+	{
+		std::uint32_t tmp = 0;
+//		std::cerr << ">> command: " << Command::str(cmd->type) << "\n";
+
+		if ((*cmd)(oss, &tmp, symtbl, offset + totalLength) != 0) return 1;
+		totalLength += tmp;
+	}
+
+	*length = totalLength;
+	*out = oss.str();
 
 	return 0;
 }

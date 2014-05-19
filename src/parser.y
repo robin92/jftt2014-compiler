@@ -205,6 +205,9 @@ command:
 |	IF condition THEN commands ELSE commands END {
 		Command *command = new Command();
 		command->type = Command::Type::IF;
+		command->cond = $2;
+		command->thencmds = $4;
+		command->elsecmds = $6;
 		$$ = command;
 	}
 |	WHILE condition DO commands END {
@@ -297,33 +300,50 @@ expression:
 
 condition:
 	IDENTIFIER OPERATOR_EQ IDENTIFIER {
+		if ( not(is_identifier($1)) or not(is_identifier($3)) ) return ERROR;
+	
 		Condition *condition = new Condition();
 		condition->type = Condition::Type::EQ;
+		condition->ids = std::make_pair($1, $3);
 		$$ = condition;
 	}
 |	IDENTIFIER OPERATOR_NE IDENTIFIER {
+		if ( not(is_identifier($1)) or not(is_identifier($3)) ) return ERROR;
+
 		Condition *condition = new Condition();
 		condition->type = Condition::Type::NE;
+		condition->ids = std::make_pair($1, $3);
 		$$ = condition;
 	}
 |	IDENTIFIER OPERATOR_LT IDENTIFIER {
+		if ( not(is_identifier($1)) or not(is_identifier($3)) ) return ERROR;
+		
 		Condition *condition = new Condition();
 		condition->type = Condition::Type::LT;
+		condition->ids = std::make_pair($1, $3);
 		$$ = condition;
 	}
 |	IDENTIFIER OPERATOR_GT IDENTIFIER {
+		if ( not(is_identifier($1)) or not(is_identifier($3)) ) return ERROR;
+		
 		Condition *condition = new Condition();
 		condition->type = Condition::Type::GT;
+		condition->ids = std::make_pair($1, $3);
 		$$ = condition;
 	}
 |	IDENTIFIER OPERATOR_LE IDENTIFIER {
+		if ( not(is_identifier($1)) or not(is_identifier($3)) ) return ERROR;
+		
 		Condition *condition = new Condition();
 		condition->type = Condition::Type::LE;
 		$$ = condition;
 	}
 |	IDENTIFIER OPERATOR_GE IDENTIFIER {
+		if ( not(is_identifier($1)) or not(is_identifier($3)) ) return ERROR;
+		
 		Condition *condition = new Condition();
 		condition->type = Condition::Type::GE;
+		condition->ids = std::make_pair($1, $3);
 		$$ = condition;
 	}
 ;
@@ -358,4 +378,38 @@ is_identifier(const std::string& id)
 	
 	return true;
 }
+/*
+std::int32_t
+parse_commands(
+		std::uint32_t* length,
+		Commands *cmds,
+		const std::uint32_t& offset)
+{
+	std::uint32_t totalLength = offset;
+	for (Command *cmd : $6->cmds)
+	{
+		std::uint32_t length = 0;
+		std::cerr << ">> command: " << Command::str(cmd->type) << "\n";
+		
+		switch (cmd->type)
+		{
+			case Command::Type::ASSIGNMENT:
+				{
+					if ((*cmd)(std::cout, &length, symtbl, totalLength) != 0) return ERROR;
+					totalLength += length;				
+				}
+				break;
+
+			case Command::Type::IF:
+			case Command::Type::WHILE:
+			case Command::Type::READ:
+			case Command::Type::WRITE:
+			default: 
+				break;
+		}
+	}
+
+	return 0;
+}
+*/
 

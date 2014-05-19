@@ -1,0 +1,12 @@
+CONST
+    zero = 0
+    jeden = 1
+    dwa = 2
+VAR
+BEGIN
+    IF dwa == dwa THEN
+        WRITE jeden; 
+    ELSE
+        WRITE zero;
+    END
+END
