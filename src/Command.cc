@@ -60,6 +60,15 @@ handle_if(
 
 static
 std::int32_t
+handle_while(
+		std::string *out,
+		std::uint32_t* length,
+		ISymbolTable* symtbl,
+		const std::uint32_t& offset,
+		Command* self);
+
+static
+std::int32_t
 parse_complex_expr(
 		std::ostream& machine_code,
 		ISymbolTable* symtbl,
@@ -132,6 +141,9 @@ Command::generate(
 			break;
 
 		case Type::WHILE:
+			err = handle_while(&tmp, length, symtbl, offset, this);
+			break;
+
 		default:
 			break;
 	}
@@ -296,6 +308,57 @@ handle_if(
 
 	*out = machine_code.str();
 	*length = count_lines(*out);
+	return 0;
+}
+
+std::int32_t
+handle_while(
+		std::string *out,
+		std::uint32_t* length,
+		ISymbolTable* symtbl,
+		const std::uint32_t& offset,
+		Command* self)
+{
+	std::ostringstream machine_code;
+
+	ISymbolTable::Entry first = symtbl->get(self->cond->ids.first),
+			second = symtbl->get(self->cond->ids.second);
+
+	switch (self->cond->type)
+	{
+		case Condition::Type::EQ:
+			machine_code << code::compare_eq(first, second, offset);
+			break;
+
+		case Condition::Type::NE:
+			machine_code << code::compare_ne(first, second, offset);
+			break;
+
+		case Condition::Type::LT:
+			machine_code << code::compare_lt(first, second, offset);
+			break;
+
+		case Condition::Type::GT:
+		case Condition::Type::LE:
+		case Condition::Type::GE:
+		default:
+			break;
+	}
+
+	std::string doClause;
+	std::uint32_t condLen = count_lines(machine_code.str());
+	std::uint32_t doLen = 0;
+	std::int32_t doErr = parse_commands(&doClause, &doLen, self->docmds, symtbl, offset + condLen + 1);
+	
+	machine_code
+			<< code::cmd::JZ << " " << offset + condLen + doLen + 2 << "\n"
+			<< doClause
+			<< code::cmd::JUMP << " " << offset << "\n";
+
+
+	*out = machine_code.str();
+	*length = count_lines(*out);
+	
 	return 0;
 }
 

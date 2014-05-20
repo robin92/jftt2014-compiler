@@ -213,6 +213,8 @@ command:
 |	WHILE condition DO commands END {
 		Command *command = new Command();
 		command->type = Command::Type::WHILE;
+		command->cond = $2;
+		command->docmds = $4;
 		$$ = command;
 	}
 |	READ IDENTIFIER SEMICOLON {
