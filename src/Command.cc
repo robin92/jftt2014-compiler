@@ -263,6 +263,9 @@ handle_if(
 			break;
 		
 		case Condition::Type::NE:
+			machine_code << code::compare_ne(first, second, offset);
+			break;
+		
 		case Condition::Type::LT:
 		case Condition::Type::GT:
 		case Condition::Type::LE:

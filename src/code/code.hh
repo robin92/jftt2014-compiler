@@ -30,6 +30,9 @@ namespace code
 		const std::string HALT	= "HALT";
 	}	// namespace cmd
 
+	/**
+	 *
+	 */
 	std::string
 	generate_number(const std::string& decnum);
 
@@ -38,6 +41,12 @@ namespace code
 
 	std::string
 	compare_eq(
+			const ISymbolTable::Entry& a,
+			const ISymbolTable::Entry& b,
+			const std::uint32_t offset = 0);
+
+	std::string
+	compare_ne(
 			const ISymbolTable::Entry& a,
 			const ISymbolTable::Entry& b,
 			const std::uint32_t offset = 0);
