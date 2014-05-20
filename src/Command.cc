@@ -283,6 +283,9 @@ handle_if(
 			break;
 
 		case Condition::Type::GT:
+			machine_code << code::compare_gt(first, second, offset);
+			break;
+
 		case Condition::Type::LE:
 		case Condition::Type::GE:
 		default:

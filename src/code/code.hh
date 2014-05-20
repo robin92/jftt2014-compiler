@@ -58,6 +58,12 @@ namespace code
 			const std::uint32_t offset = 0);
 
 	std::string
+	compare_gt(
+			const ISymbolTable::Entry& a,
+			const ISymbolTable::Entry& b,
+			const std::uint32_t offset = 0);
+
+	std::string
 	add(const ISymbolTable::Entry& a, const ISymbolTable::Entry& b);
 
 	std::string
