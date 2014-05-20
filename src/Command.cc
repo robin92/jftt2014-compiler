@@ -77,10 +77,20 @@ parse_complex_expr(
 		const std::uint32_t& offset = 0);
 		
 static inline
-std::int32_t parse_commands(
-		std::string* out,
-		std::uint32_t* length,
+std::int32_t
+parse_commands(
+		std::string *out,
+		std::uint32_t *length,
 		Commands *cmds,
+		ISymbolTable *symtbl,
+		const std::uint32_t& offset = 0);
+		
+static inline
+std::int32_t
+parse_condition(
+		std::string *out,
+		std::uint32_t *length,
+		Condition *cond,
 		ISymbolTable *symtbl,
 		const std::uint32_t& offset = 0);
 
@@ -117,27 +127,19 @@ Command::generate(
 	switch (type)
 	{
 		case Type::ASSIGNMENT:
-			{
-				err = handle_assignment(&tmp, length, symtbl, offset, this);
-			}
+			err = handle_assignment(&tmp, length, symtbl, offset, this);
 			break;
 
 		case Type::READ:
-			{
-				err = handle_read(&tmp, length, symtbl, offset, this);
-			}
+			err = handle_read(&tmp, length, symtbl, offset, this);
 			break;
 
 		case Type::WRITE:
-			{
-				err = handle_write(&tmp, length, symtbl, offset, this);	
-			}
+			err = handle_write(&tmp, length, symtbl, offset, this);	
 			break;
 
 		case Type::IF:
-			{
-				err = handle_if(&tmp, length, symtbl, offset, this);
-			}
+			err = handle_if(&tmp, length, symtbl, offset, this);
 			break;
 
 		case Type::WHILE:
@@ -185,11 +187,9 @@ handle_assignment(
 	{
 		// przypisywanie zmiennej wartości numerycznej
 		case Expression::Type::NUMBER:
-			{
-				machine_code
+			machine_code
 					<< code::generate_number(self->expr->number)
 					<< code::cmd::STORE << " " << entry.current_addr << "\n";
-			}
 			break;
 
 		// przypisywanie zmiennej wartości stałej lub innej zmiennej
@@ -201,18 +201,17 @@ handle_assignment(
 			}
 			break;
 
-			// TODO
-			// przypisywanie zmiennej wartości wyrażenia arytmetycznego
-			case Expression::Type::COMPLEX:
-				if (parse_complex_expr(machine_code, symtbl, entry, *self->expr, offset) != 0) return 4;
-				break;
+		case Expression::Type::COMPLEX:
+			if (parse_complex_expr(machine_code, symtbl, entry, *self->expr, offset) != 0) return 4;
+			break;
 
-			default:
-				break;
+		default:
+			break;
 	}
 	
 	*out = machine_code.str();
 	*length = count_lines(*out);
+
 	return 0;
 }
 
@@ -227,12 +226,12 @@ handle_read(
 	std::ostringstream machine_code;
 
 	ISymbolTable::Entry entry = symtbl->get(self->identifier);
-	
 	machine_code
 			<< code::cmd::SCAN << " " << entry.current_addr << "\n";			
 
 	*out = machine_code.str();
 	*length = count_lines(*out);
+
 	return 0;
 }
 
@@ -252,6 +251,7 @@ handle_write(
 
 	*out = machine_code.str();
 	*length = count_lines(*out);
+
 	return 0;
 }
 
@@ -265,58 +265,26 @@ handle_if(
 {
 	std::ostringstream machine_code;
 
-	ISymbolTable::Entry first = symtbl->get(self->cond->ids.first),
-			second = symtbl->get(self->cond->ids.second);
-
-	switch (self->cond->type)
-	{
-		case Condition::Type::EQ:
-			machine_code << code::compare_eq(first, second, offset);
-			break;
-
-		case Condition::Type::NE:
-			machine_code << code::compare_ne(first, second, offset);
-			break;
-
-		case Condition::Type::LT:
-			machine_code << code::compare_lt(first, second, offset);
-			break;
-
-		case Condition::Type::GT:
-			machine_code << code::compare_gt(first, second, offset);
-			break;
-
-		case Condition::Type::LE:
-			machine_code << code::compare_le(first, second, offset);
-			break;
-
-		case Condition::Type::GE:
-			machine_code << code::compare_ge(first, second, offset);
-			break;
-
-		default:
-			break;
-	}
+	std::string condition;
+	std::uint32_t condLen = 0;
+	std::int32_t condErr = parse_condition(&condition, &condLen, self->cond, symtbl, offset);
 
 	// TODO: wymaga rzetelnych testów
 	std::string thenClause, elseClause;
-	std::uint32_t condLen = count_lines(machine_code.str());
 	std::uint32_t thenLen = 0, elseLen = 0;
 	std::int32_t thenErr = parse_commands(&thenClause, &thenLen, self->thencmds, symtbl, offset + condLen + 1),	
 			elseErr = parse_commands(&elseClause, &elseLen, self->elsecmds, symtbl, offset + condLen + thenLen + 2);
 
 	machine_code
-//			<< code::cmd::JZ << " " << "@next_else_clause" << "\n"
-//			<< "[THEN CLAUSE]\n"
+			<< condition
 			<< code::cmd::JZ << " " << condLen + offset + thenLen + 2 << "\n"
 			<< thenClause
-//			<< code::cmd::JUMP << " " << "@after_next_else" << "\n"
-//			<< "[ELSE CLAUSE]\n";
 			<< code::cmd::JUMP << " " << offset + condLen + 1 + thenLen + 1 + elseLen << "\n"
 			<< elseClause;
 
 	*out = machine_code.str();
 	*length = count_lines(*out);
+
 	return 0;
 }
 
@@ -330,44 +298,23 @@ handle_while(
 {
 	std::ostringstream machine_code;
 
-	ISymbolTable::Entry first = symtbl->get(self->cond->ids.first),
-			second = symtbl->get(self->cond->ids.second);
-
-	switch (self->cond->type)
-	{
-		case Condition::Type::EQ:
-			machine_code << code::compare_eq(first, second, offset);
-			break;
-
-		case Condition::Type::NE:
-			machine_code << code::compare_ne(first, second, offset);
-			break;
-
-		case Condition::Type::LT:
-			machine_code << code::compare_lt(first, second, offset);
-			break;
-
-		case Condition::Type::GT:
-		case Condition::Type::LE:
-		case Condition::Type::GE:
-		default:
-			break;
-	}
+	std::string condition;
+	std::uint32_t condLen = 0;
+	std::int32_t condErr = parse_condition(&condition, &condLen, self->cond, symtbl, offset);
 
 	std::string doClause;
-	std::uint32_t condLen = count_lines(machine_code.str());
 	std::uint32_t doLen = 0;
 	std::int32_t doErr = parse_commands(&doClause, &doLen, self->docmds, symtbl, offset + condLen + 1);
-	
+
 	machine_code
+			<< condition
 			<< code::cmd::JZ << " " << offset + condLen + doLen + 2 << "\n"
 			<< doClause
 			<< code::cmd::JUMP << " " << offset << "\n";
 
-
 	*out = machine_code.str();
 	*length = count_lines(*out);
-	
+
 	return 0;
 }
 
@@ -423,8 +370,8 @@ parse_complex_expr(
 
 std::int32_t
 parse_commands(
-		std::string* out,
-		std::uint32_t* length,
+		std::string *out,
+		std::uint32_t *length,
 		Commands *cmds,
 		ISymbolTable *symtbl,
 		const std::uint32_t& offset)
@@ -435,7 +382,6 @@ parse_commands(
 	for (Command *cmd : cmds->cmds)
 	{
 		std::uint32_t tmp = 0;
-//		std::cerr << ">> command: " << Command::str(cmd->type) << "\n";
 
 		if ((*cmd)(oss, &tmp, symtbl, offset + totalLength) != 0) return 1;
 		totalLength += tmp;
@@ -443,6 +389,54 @@ parse_commands(
 
 	*length = totalLength;
 	*out = oss.str();
+
+	return 0;
+}
+
+std::int32_t
+parse_condition(
+		std::string *out,
+		std::uint32_t *length,
+		Condition *cond,
+		ISymbolTable *symtbl,
+		const std::uint32_t& offset)
+{
+	std::ostringstream machine_code;
+	ISymbolTable::Entry first = symtbl->get(cond->ids.first),
+			second = symtbl->get(cond->ids.second);
+
+	switch (cond->type)
+	{
+		case Condition::Type::EQ:
+			machine_code << code::compare_eq(first, second, offset);
+			break;
+
+		case Condition::Type::NE:
+			machine_code << code::compare_ne(first, second, offset);
+			break;
+
+		case Condition::Type::LT:
+			machine_code << code::compare_lt(first, second, offset);
+			break;
+
+		case Condition::Type::GT:
+			machine_code << code::compare_gt(first, second, offset);
+			break;
+
+		case Condition::Type::LE:
+			machine_code << code::compare_le(first, second, offset);
+			break;
+
+		case Condition::Type::GE:
+			machine_code << code::compare_ge(first, second, offset);
+			break;
+
+		default:
+			break;
+	}
+
+	*out = machine_code.str();
+	*length = count_lines(*out);
 
 	return 0;
 }

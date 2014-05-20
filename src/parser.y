@@ -381,38 +381,4 @@ is_identifier(const std::string& id)
 	
 	return true;
 }
-/*
-std::int32_t
-parse_commands(
-		std::uint32_t* length,
-		Commands *cmds,
-		const std::uint32_t& offset)
-{
-	std::uint32_t totalLength = offset;
-	for (Command *cmd : $6->cmds)
-	{
-		std::uint32_t length = 0;
-		std::cerr << ">> command: " << Command::str(cmd->type) << "\n";
-		
-		switch (cmd->type)
-		{
-			case Command::Type::ASSIGNMENT:
-				{
-					if ((*cmd)(std::cout, &length, symtbl, totalLength) != 0) return ERROR;
-					totalLength += length;				
-				}
-				break;
-
-			case Command::Type::IF:
-			case Command::Type::WHILE:
-			case Command::Type::READ:
-			case Command::Type::WRITE:
-			default: 
-				break;
-		}
-	}
-
-	return 0;
-}
-*/
 
