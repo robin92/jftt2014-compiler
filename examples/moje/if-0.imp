@@ -1,14 +1,13 @@
 CONST
-    false = 0
-    true = 1
 VAR
-    a b
+    a b c
 BEGIN
     READ a;
     READ b;
+    c := 1;
     IF a == b THEN
-        WRITE true;
+        c := 2;
     ELSE
-        WRITE false;
     END
+    WRITE c;
 END

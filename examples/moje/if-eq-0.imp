@@ -1,0 +1,14 @@
+CONST
+    false = 0
+    true = 1
+VAR
+    a b
+BEGIN
+    READ a;
+    READ b;
+    IF a == b THEN
+        WRITE true;
+    ELSE
+        WRITE false;
+    END
+END
