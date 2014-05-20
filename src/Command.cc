@@ -287,7 +287,13 @@ handle_if(
 			break;
 
 		case Condition::Type::LE:
+			machine_code << code::compare_le(first, second, offset);
+			break;
+
 		case Condition::Type::GE:
+			machine_code << code::compare_ge(first, second, offset);
+			break;
+
 		default:
 			break;
 	}

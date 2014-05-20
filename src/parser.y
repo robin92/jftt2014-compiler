@@ -338,6 +338,7 @@ condition:
 		
 		Condition *condition = new Condition();
 		condition->type = Condition::Type::LE;
+		condition->ids = std::make_pair($1, $3);
 		$$ = condition;
 	}
 |	IDENTIFIER OPERATOR_GE IDENTIFIER {

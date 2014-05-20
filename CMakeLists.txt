@@ -38,6 +38,8 @@ add_library (genvm
 		${SOURCEDIR}/code/compare_ne.cc
 		${SOURCEDIR}/code/compare_lt.cc
 		${SOURCEDIR}/code/compare_gt.cc
+		${SOURCEDIR}/code/compare_le.cc
+		${SOURCEDIR}/code/compare_ge.cc		
 		${SOURCEDIR}/code/add.cc
 		${SOURCEDIR}/code/subtract.cc
 		${SOURCEDIR}/code/multiply.cc
