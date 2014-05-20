@@ -36,6 +36,7 @@ add_library (genvm
 		${SOURCEDIR}/code/copy_value.cc
 		${SOURCEDIR}/code/compare_eq.cc
 		${SOURCEDIR}/code/compare_ne.cc
+		${SOURCEDIR}/code/compare_lt.cc
 		${SOURCEDIR}/code/add.cc
 		${SOURCEDIR}/code/subtract.cc
 		${SOURCEDIR}/code/multiply.cc

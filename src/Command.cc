@@ -261,12 +261,15 @@ handle_if(
 		case Condition::Type::EQ:
 			machine_code << code::compare_eq(first, second, offset);
 			break;
-		
+
 		case Condition::Type::NE:
 			machine_code << code::compare_ne(first, second, offset);
 			break;
-		
+
 		case Condition::Type::LT:
+			machine_code << code::compare_lt(first, second, offset);
+			break;
+
 		case Condition::Type::GT:
 		case Condition::Type::LE:
 		case Condition::Type::GE:
