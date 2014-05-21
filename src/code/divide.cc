@@ -31,14 +31,16 @@ code::divide(
 	std::ostringstream machine_code;
 	std::uint32_t padLen = 0, divLen = 0;
 
-	std::string padding = helper::pad_left(&padLen, offset + 4);
-	std::string division = get_divide_code(&divLen, offset + 4 + padLen);
+	std::string padding = helper::pad_left(&padLen, offset + 6);
+	std::string division = get_divide_code(&divLen, offset + 6 + padLen);
 
 	machine_code
 			<< LOAD << " " << a.current_addr << "\n"
 			<< STORE << " " << 0 << "\n"
 			<< LOAD << " " << b.current_addr << "\n"
 			<< STORE << " " << 1 << "\n"
+			<< ZERO << "\n"
+			<< STORE << " " << 3 << "\n"
 			<< padding
 			<< division
 			<< LOAD << " " << 3 << "\n";
@@ -52,7 +54,6 @@ std::string
 get_divide_code(std::uint32_t *length, const std::uint32_t& offset)
 {
 	std::ostringstream machine_code;
-	std::cerr << ">> div, offset = " << offset << "\n";
 	
 	machine_code
 			<< LOAD << " " << 2 << "\n"				//	while d > 0 do
