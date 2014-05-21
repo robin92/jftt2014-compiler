@@ -99,6 +99,12 @@ namespace code
 			const ISymbolTable::Entry& a,
 			const ISymbolTable::Entry& b,
 			const std::uint32_t offset = 0);
+
+	std::string
+	modulo(
+			const ISymbolTable::Entry& a,
+			const ISymbolTable::Entry& b,
+			const std::uint32_t offset = 0);
 }	// namespace code
 
 #endif	// COMPILER_CODE_HH_

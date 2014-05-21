@@ -40,11 +40,12 @@ add_library (genvm
 		${SOURCEDIR}/code/compare_gt.cc
 		${SOURCEDIR}/code/compare_le.cc
 		${SOURCEDIR}/code/compare_ge.cc		
+		${SOURCEDIR}/code/pad_left.cc
 		${SOURCEDIR}/code/add.cc
 		${SOURCEDIR}/code/subtract.cc
 		${SOURCEDIR}/code/multiply.cc
 		${SOURCEDIR}/code/divide.cc
-		${SOURCEDIR}/code/pad_left.cc
+		${SOURCEDIR}/code/modulo.cc
 	)
 
 add_executable (kompilator

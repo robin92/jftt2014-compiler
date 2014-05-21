@@ -366,8 +366,15 @@ parse_complex_expr(
 			}
 			break;		
 
-		// TODO
+
 		case Expression::Operation::MODULO:
+			{
+				machine_code
+						<< code::modulo(first, second, offset)
+						<< code::cmd::STORE << " " << entry.current_addr << "\n";			
+			}
+			break;
+
 		default:
 			break;
 	}
