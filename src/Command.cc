@@ -357,9 +357,16 @@ parse_complex_expr(
 						<< code::cmd::STORE << " " << entry.current_addr << "\n";
 			}
 			break;
-		
-		// TODO
+
 		case Expression::Operation::DIVIDE:
+			{
+				machine_code
+						<< code::divide(first, second, offset)
+						<< code::cmd::STORE << " " << entry.current_addr << "\n";
+			}
+			break;		
+
+		// TODO
 		case Expression::Operation::MODULO:
 		default:
 			break;

@@ -364,7 +364,7 @@ yyerror(std::string const& error)
 std::uint32_t
 next_mem_addr()
 {
-	static std::uint32_t addr = 3;	// pierwsze 3 sa tansze wiec lepsze do obliczen
+	static std::uint32_t addr = 10;	// pierwsze 3 sa tansze wiec lepsze do obliczen, kilka rezerwujemy
 	return addr++;
 }
 
