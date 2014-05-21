@@ -44,6 +44,7 @@ add_library (genvm
 		${SOURCEDIR}/code/subtract.cc
 		${SOURCEDIR}/code/multiply.cc
 		${SOURCEDIR}/code/divide.cc
+		${SOURCEDIR}/code/pad_left.cc
 	)
 
 add_executable (kompilator

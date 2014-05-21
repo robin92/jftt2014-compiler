@@ -30,6 +30,16 @@ namespace code
 		const std::string HALT	= "HALT";
 	}	// namespace cmd
 
+	namespace helper
+	{
+		/**
+		 * Wyrównuje bity liczb w rejestrach p[0] i p[1].
+		 * Dodatkowo w rejestrze p[2] umieszcza liczbę 1 na pozycji najstarszego bitu p[0].
+		 */
+		std::string
+		pad_left(std::uint32_t *length = nullptr, const std::uint32_t& offset = 0);
+	}
+
 	std::string
 	generate_number(const std::string& decnum);
 
