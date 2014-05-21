@@ -1,0 +1,52 @@
+; dzielenie a / b
+; program sklada sie z dwoch czesci: wyrownania do lewej i dzielenia
+; oznaczenia:
+;	c - wynik (suma cząstkowa), d - jedynka wyrównana do a
+; uzycie pamieci:
+;	p[0] = a, p[1] = b, p[2] = d, p[3] = c
+;
+SCAN 0		; a
+SCAN 1		; b
+ZERO		; wyrownywanie do lewej
+INC
+STORE 2		; rejestr d
+LOAD 0		; {{ pad }}, porównanie rejestrów p[0] > p[1]
+SUB 1
+JG 10
+ZERO
+JUMP 11
+INC			; {{ true }}
+JZ 19		; {{ koniec }}
+LOAD 1
+SHL
+STORE 1
+LOAD 2
+SHL
+STORE 2
+JUMP 5
+ZERO		; {{ padend }}
+STORE 3
+LOAD 2		; {{ dziel }}, d > 0
+JZ 39		; @dz_end
+LOAD 1		; b <= a
+SUB 0
+JG 32		; @if_false
+LOAD 3		; c += d
+ADD 2
+STORE 3
+LOAD 0		; a -= b
+SUB 1
+STORE 0
+LOAD 1		; {{ if_false }}, b >>= 1
+SHR
+STORE 1
+LOAD 2		; d >>= 1
+SHR
+STORE 2
+JUMP 21		; @dziel
+PRINT 3		; {{ dz_end }}, wynik
+PRINT 0		; reszta
+PRINT 1
+PRINT 2
+HALT
+
