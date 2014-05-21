@@ -12,25 +12,21 @@ INC
 STORE 2		; rejestr d
 LOAD 0		; {{ pad }}, porównanie rejestrów p[0] > p[1]
 SUB 1
-JG 10
-ZERO
-JUMP 11
-INC			; {{ true }}
-JZ 19		; {{ koniec }}
+JZ 15		; @padend
 LOAD 1
 SHL
 STORE 1
 LOAD 2
 SHL
 STORE 2
-JUMP 5
+JUMP 5		; @pad
 ZERO		; {{ padend }}
 STORE 3
 LOAD 2		; {{ dziel }}, d > 0
-JZ 39		; @dz_end
+JZ 35		; @dz_end
 LOAD 1		; b <= a
 SUB 0
-JG 32		; @if_false
+JG 28		; @if_false
 LOAD 3		; c += d
 ADD 2
 STORE 3
@@ -43,7 +39,7 @@ STORE 1
 LOAD 2		; d >>= 1
 SHR
 STORE 2
-JUMP 21		; @dziel
+JUMP 17		; @dziel
 PRINT 3		; {{ dz_end }}, wynik
 PRINT 0		; reszta
 PRINT 1

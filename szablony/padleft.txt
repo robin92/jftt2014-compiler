@@ -1,3 +1,7 @@
+; wyrównywanie liczby b do lewej strony a
+; eg.
+;	a = 0b100100, b = 101 => b = 101000
+;
 SCAN 0		; a
 SCAN 1		; b
 ZERO		; wyrownywanie do lewej
@@ -5,11 +9,7 @@ INC
 STORE 2		; rejestr d
 LOAD 0		; {{ pad }}, porównanie rejestrów p[0] > p[1]
 SUB 1
-JG @true
-ZERO
-JUMP @koniec
-INC			; {{ true }}
-JZ @padend	; {{ koniec }}
+JZ @padend
 LOAD 1
 SHL
 STORE 1
