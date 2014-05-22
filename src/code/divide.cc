@@ -29,22 +29,30 @@ code::divide(
 	std::ostringstream machine_code;
 	
 	std::uint64_t power = 0;
-	if (F_DIVIDE_BY_TWO_POWERS and b.has_value and helper::is_two_power(&power, b.value))	// dzielnk jest potęgą dwójki
+	if (F_DIVIDE_BY_TWO_POWERS and
+			(b.has_value and helper::is_two_power(&power, b.value)))	// dzielnk jest potęgą dwójki
 	{
 		// optymalizacja: dzielenie przez potęgę dwójki
 		std::cerr
 				<< ">> optymalizacja: dzielenie przez 2^i, b = "
 				<< b.value << ", i = " << power << "\n";
-		
+
 		machine_code << LOAD << " " << a.current_addr << "\n";
 		for (std::uint64_t i = 0; i < power; i++) machine_code << SHR << "\n";
+	}
+	else if (F_DIVIDE_BY_ZERO and
+			(b.has_value and (std::int32_t) b.value.find_first_not_of('0') == -1))	// dzielnik jest zerem (stałą)
+	{
+		// optymalizacja: dzielenie przez zero
+		std::cerr << ">> optymalizacja: dzielenie przez 0\n";
+
+		machine_code << ZERO << "\n";
 	}
 	else
 	{
 		std::uint32_t padLen = 0, divLen = 0;
-
-		std::string padding = helper::pad_left(&padLen, offset + 6);
-		std::string division = get_divide_code(&divLen, offset + 6 + padLen);
+		std::string padding = helper::pad_left(&padLen, offset + 8);
+		std::string division = get_divide_code(&divLen, offset + 8 + padLen);
 
 		machine_code
 				<< LOAD << " " << a.current_addr << "\n"
@@ -53,6 +61,8 @@ code::divide(
 				<< STORE << " " << 1 << "\n"
 				<< ZERO << "\n"
 				<< STORE << " " << 3 << "\n"
+				<< LOAD << " " << 1 << "\n"							// jeśli b == 0 to wynikiem jest 0
+				<< JZ << " " << offset + padLen + divLen << "\n"
 				<< padding
 				<< division
 				<< LOAD << " " << 3 << "\n";
