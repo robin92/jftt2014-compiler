@@ -4,6 +4,7 @@
 #include <sstream>
 #include <string>
 
+#include "config.hh"
 #include "code.hh"
 
 
@@ -28,7 +29,7 @@ code::divide(
 	std::ostringstream machine_code;
 	
 	std::uint64_t power = 0;
-	if (b.has_value and helper::is_two_power(&power, b.value))	// dzielnk jest potęgą dwójki
+	if (F_DIVIDE_BY_TWO_POWERS and b.has_value and helper::is_two_power(&power, b.value))	// dzielnk jest potęgą dwójki
 	{
 		// optymalizacja: dzielenie przez potęgę dwójki
 		std::cerr

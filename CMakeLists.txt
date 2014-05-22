@@ -27,6 +27,13 @@ set (VERSION_PATCH 0)
 set (VERSION_STRING "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}")
 
 set (SOURCEDIR "src")
+include_directories (
+		${SOURCEDIR}
+	)
+
+# domyślne flagi
+set (F_DIVIDE_BY_TWO_POWERS true)
+configure_file (${SOURCEDIR}/config.hh.in ${SOURCEDIR}/config.hh)
 
 FLEX_TARGET (scanner ${SOURCEDIR}/scanner.l ${SOURCEDIR}/scanner.lex.cc)
 BISON_TARGET (parser ${SOURCEDIR}/parser.y ${SOURCEDIR}/parser.tab.cc)

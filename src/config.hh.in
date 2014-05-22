@@ -1,0 +1,8 @@
+#ifndef COMPILER_CONFIG_HH_
+#define COMPILER_CONFIG_HH_
+
+// stany optymalizacji (wlacz/wylacz)
+#define F_DIVIDE_BY_TWO_POWERS	(@F_DIVIDE_BY_TWO_POWERS@)
+
+#endif  // COMPILER_CONFIG_HH_
+
