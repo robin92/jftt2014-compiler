@@ -1,0 +1,18 @@
+(* do testowania optymalizacji dzielenia przez wielokrotnosci dwojki 
+ *  poprawny output:
+ *      > 6172839451
+ *      > 1471
+ *)
+CONST
+    dwa = 2
+    duze = 8388608
+    stala = 12345678903
+VAR
+    a
+BEGIN
+    a := stala / dwa;
+    WRITE a;
+    
+    a := stala / duze;
+    WRITE a;
+END

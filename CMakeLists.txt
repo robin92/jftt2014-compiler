@@ -41,6 +41,7 @@ add_library (genvm
 		${SOURCEDIR}/code/compare_le.cc
 		${SOURCEDIR}/code/compare_ge.cc		
 		${SOURCEDIR}/code/pad_left.cc
+		${SOURCEDIR}/code/is_two_power.cc		
 		${SOURCEDIR}/code/add.cc
 		${SOURCEDIR}/code/subtract.cc
 		${SOURCEDIR}/code/multiply.cc

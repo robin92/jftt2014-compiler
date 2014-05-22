@@ -38,6 +38,9 @@ namespace code
 		 */
 		std::string
 		pad_left(std::uint32_t *length = nullptr, const std::uint32_t& offset = 0);
+
+		bool
+		is_two_power(std::uint64_t *power, const std::string& decnum);
 	}
 
 	std::string

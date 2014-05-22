@@ -4,8 +4,6 @@
 #include <sstream>
 #include <string>
 
-#include <gmpxx.h>
-
 #include "code.hh"
 
 
@@ -20,7 +18,6 @@ using namespace code::cmd;
 
 // FIXME: dzielenie przez 0 ma dawać 0, teraz zacina
 // TODO: możliwe optymalizacje:
-//	+ /2 => SHR; /4 SHR, SHR; /8 => SHR, SHR, SHR
 //	+ /0 => ZERO
 std::string
 code::divide(
@@ -29,21 +26,36 @@ code::divide(
 		const std::uint32_t offset)
 {
 	std::ostringstream machine_code;
-	std::uint32_t padLen = 0, divLen = 0;
+	
+	std::uint64_t power = 0;
+	if (b.has_value and helper::is_two_power(&power, b.value))	// dzielnk jest potęgą dwójki
+	{
+		// optymalizacja: dzielenie przez potęgę dwójki
+		std::cerr
+				<< ">> optymalizacja: dzielenie przez 2^i, b = "
+				<< b.value << ", i = " << power << "\n";
+		
+		machine_code << LOAD << " " << a.current_addr << "\n";
+		for (std::uint64_t i = 0; i < power; i++) machine_code << SHR << "\n";
+	}
+	else
+	{
+		std::uint32_t padLen = 0, divLen = 0;
 
-	std::string padding = helper::pad_left(&padLen, offset + 6);
-	std::string division = get_divide_code(&divLen, offset + 6 + padLen);
+		std::string padding = helper::pad_left(&padLen, offset + 6);
+		std::string division = get_divide_code(&divLen, offset + 6 + padLen);
 
-	machine_code
-			<< LOAD << " " << a.current_addr << "\n"
-			<< STORE << " " << 0 << "\n"
-			<< LOAD << " " << b.current_addr << "\n"
-			<< STORE << " " << 1 << "\n"
-			<< ZERO << "\n"
-			<< STORE << " " << 3 << "\n"
-			<< padding
-			<< division
-			<< LOAD << " " << 3 << "\n";
+		machine_code
+				<< LOAD << " " << a.current_addr << "\n"
+				<< STORE << " " << 0 << "\n"
+				<< LOAD << " " << b.current_addr << "\n"
+				<< STORE << " " << 1 << "\n"
+				<< ZERO << "\n"
+				<< STORE << " " << 3 << "\n"
+				<< padding
+				<< division
+				<< LOAD << " " << 3 << "\n";
+	}
 
 	return machine_code.str();
 }
