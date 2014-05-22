@@ -19,7 +19,7 @@ message (STATUS "Build type: ${CMAKE_BUILD_TYPE}")
 
 find_package (FLEX REQUIRED)
 find_package (BISON REQUIRED)
-find_package(GMPXX REQUIRED)
+find_package (GMPXX REQUIRED)
 
 set (VERSION_MAJOR 0)
 set (VERSION_MINOR 1)
@@ -32,8 +32,10 @@ include_directories (
 	)
 
 # domyślne flagi
-set (F_DIVIDE_BY_TWO_POWERS true)
-set (F_MULTIPLY_BY_TWO_POWERS true)
+option (f_divide_by_zero "aktywuj optymalizację dzielenia przez 0" ON)
+option (f_divide_by_two_powers "aktywuj optymalizację dzielenia przez potęgi dwójki" ON)
+option (f_multiply_by_two_powers "aktywuj optymalizację mnożenia przez potęgi dwójki" ON)
+
 configure_file (${SOURCEDIR}/config.hh.in ${SOURCEDIR}/config.hh)
 
 FLEX_TARGET (scanner ${SOURCEDIR}/scanner.l ${SOURCEDIR}/scanner.lex.cc)
