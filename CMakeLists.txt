@@ -33,6 +33,7 @@ include_directories (
 
 # domyślne flagi
 set (F_DIVIDE_BY_TWO_POWERS true)
+set (F_MULTIPLY_BY_TWO_POWERS true)
 configure_file (${SOURCEDIR}/config.hh.in ${SOURCEDIR}/config.hh)
 
 FLEX_TARGET (scanner ${SOURCEDIR}/scanner.l ${SOURCEDIR}/scanner.lex.cc)

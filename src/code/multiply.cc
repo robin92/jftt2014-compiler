@@ -6,6 +6,7 @@
 
 #include <gmpxx.h>
 
+#include "config.hh"
 #include "code.hh"
 
 
@@ -85,7 +86,6 @@ get_multiply(const std::uint32_t& offset = 0)
 }
 
 // TODO: możliwe optymalizacje:
-//	+ x2 => SHL; x4 SHL, SHL; x8 => SHL, SHL, SHL
 //	+ WIEKSZA * MNIEJSZA (dla stala * zmienna, zmienna * stala, zmienna * zmienna) w kodzie maszynowym
 //	+ mnożenie x0 => ZERO
 std::string
@@ -95,26 +95,41 @@ code::multiply(const ISymbolTable::Entry& a,
 {
 	std::ostringstream machine_code;
 
-	// optymalizacja:
-	//	jeśli oba argumenty są stałymi to mniejszy z nich będzię mnożnikiem, np.
-	//		7 * 2 => 7 * 2
-	//		5 * 12 => 12 * 5 (mniej kroków: log(12) > log(5))
-	const ISymbolTable::Entry *tmpa = &a, *tmpb = &b;
-	if (a.has_value and b.has_value)
+	std::uint64_t apower = 0, bpower = 0;
+	if (F_MULTIPLY_BY_TWO_POWERS and (
+			(a.has_value and helper::is_two_power(&apower, a.value)) or
+			(b.has_value and helper::is_two_power(&bpower, b.value)) ))
 	{
-		mpz_class av(a.value), bv(b.value);
-		if (av < bv) std::swap(tmpa, tmpb);
-	}
-	// TODO: powyższa optymalizacja może być zastosowana
-	//	w kodzie maszynowym dla VAR * CONST, CONST * VAR, VAR * VAR
+		// optymalizacja: mnożenie przez potęgę dwójki
+		std::uint64_t power = 0;
+		const ISymbolTable::Entry *ap = &a, *bp = &b; 
+		if (apower > 0)	// a jest stałą potęgą dwójki
+		{
+			power = apower;
+		}
+		else			// b jest stałą potęgą dwójki
+		{
+			power = bpower;
+			std::swap(ap, bp);
+		}
 
-	machine_code
-			<< LOAD << " " << tmpa->current_addr << "\n"	// przygotowanie mnożnej
-			<< STORE << " " << "0" << "\n"
-			<< LOAD << " " << tmpb->current_addr << "\n"	// przygotowanie mnożnika
-			<< STORE << " " << "1" << "\n"
-			<< get_multiply(offset + 4)						// dodano 4 komendy
-			<< LOAD << " " << "2" << "\n";					// załadowanie wyniku do rejestru a
+		std::cerr
+				<< ">> optymalizacja: mnożenie przez 2^i, value = "
+				<< ap->value << ", power = " << power << "\n";
+
+		machine_code << LOAD << " " << bp->current_addr << "\n";
+		for (std::uint64_t i = 0; i < power; i++) machine_code << SHL << "\n";		
+	}
+	else
+	{
+		machine_code
+				<< LOAD << " " << a.current_addr << "\n"		// przygotowanie mnożnej
+				<< STORE << " " << "0" << "\n"
+				<< LOAD << " " << b.current_addr << "\n"		// przygotowanie mnożnika
+				<< STORE << " " << "1" << "\n"
+				<< get_multiply(offset + 4)						// dodano 4 komendy
+				<< LOAD << " " << "2" << "\n";					// załadowanie wyniku do rejestru a
+	}
 
 	return machine_code.str();
 }
