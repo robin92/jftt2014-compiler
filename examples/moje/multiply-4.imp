@@ -1,13 +1,22 @@
 CONST
     zero = 0
+    jeden = 1
     const = 512
 VAR
-    a
+    a b
 BEGIN
+    b := 1024;
+    
     a := const * zero;
     WRITE a;
     
     a := zero * const;
+    WRITE a;
+    
+    a := b * jeden;
+    WRITE a;
+    
+    a := jeden * b;
     WRITE a;
 END
 

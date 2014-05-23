@@ -95,6 +95,8 @@ code::multiply(const ISymbolTable::Entry& a,
 	std::ostringstream machine_code;
 
 	std::uint64_t apower = 0, bpower = 0;
+	bool atwopower = a.has_value and helper::is_two_power(&apower, a.value),
+			btwopower = b.has_value and helper::is_two_power(&bpower, b.value); 
 	if (F_MULTIPLY_BY_ZERO and (
 			(a.has_value and (std::int32_t) a.value.find_first_not_of('0') == -1) or
 			(b.has_value and (std::int32_t) b.value.find_first_not_of('0') == -1) ))
@@ -104,28 +106,23 @@ code::multiply(const ISymbolTable::Entry& a,
 		
 		machine_code << ZERO << "\n";
 	}
-	else if (F_MULTIPLY_BY_TWO_POWERS and (
-			(a.has_value and helper::is_two_power(&apower, a.value)) or
-			(b.has_value and helper::is_two_power(&bpower, b.value)) ))
+	else if (F_MULTIPLY_BY_TWO_POWERS and (atwopower or btwopower))
 	{
-		// optymalizacja: mnożenie przez potęgę dwójki
-		std::uint64_t power = 0;
-		const ISymbolTable::Entry *ap = &a, *bp = &b; 
-		if (apower > 0)	// a jest stałą potęgą dwójki
-		{
-			power = apower;
-		}
-		else			// b jest stałą potęgą dwójki
+		std::uint32_t power = apower;
+		const ISymbolTable::Entry *multiplier = &a, *multiplicator = &b;
+		if (atwopower)
 		{
 			power = bpower;
-			std::swap(ap, bp);
+			multiplier = &b;
+			multiplicator = &a;
 		}
-
+		
+		// optymalizacja: mnożenie przez potęgę dwójki
 		std::cerr
 				<< ">> optymalizacja: mnożenie przez 2^i, value = "
-				<< ap->value << ", power = " << power << "\n";
+				<< multiplicator->value << ", power = " << power << "\n";
 
-		machine_code << LOAD << " " << bp->current_addr << "\n";
+		machine_code << LOAD << " " << multiplier->current_addr << "\n";
 		for (std::uint64_t i = 0; i < power; i++) machine_code << SHL << "\n";		
 	} 
 	else
