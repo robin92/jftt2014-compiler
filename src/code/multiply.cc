@@ -132,7 +132,17 @@ code::multiply(const ISymbolTable::Entry& a,
 				<< STORE << " " << "0" << "\n"
 				<< LOAD << " " << b.current_addr << "\n"		// przygotowanie mnożnika
 				<< STORE << " " << "1" << "\n"
-				<< get_multiply(offset + 4)						// dodano 4 komendy
+				<< LOAD << " " << "0" << "\n"					// a >= b
+				<< SUB << " " << "1" << "\n"
+				<< JG << " " << offset + 14 << "\n"
+				<< LOAD << " " << "0" << "\n"					// swap(a, b)
+				<< STORE << " " << "2" << "\n"
+				<< LOAD << " " << "1" << "\n"
+				<< STORE << " " << "0" << "\n"
+				<< LOAD << " " << "2" << "\n"
+				<< STORE << " " << "1" << "\n"
+				<< LOAD << " " << "0" << "\n"
+				<< get_multiply(offset + 14)					// dodano 4 komendy
 				<< LOAD << " " << "2" << "\n";					// załadowanie wyniku do rejestru a
 	}
 
