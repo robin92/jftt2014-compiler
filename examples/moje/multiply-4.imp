@@ -1,0 +1,13 @@
+CONST
+    zero = 0
+    const = 512
+VAR
+    a
+BEGIN
+    a := const * zero;
+    WRITE a;
+    
+    a := zero * const;
+    WRITE a;
+END
+

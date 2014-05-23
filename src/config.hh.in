@@ -3,6 +3,7 @@
 
 #cmakedefine f_divide_by_zero
 #cmakedefine f_divide_by_two_powers
+#cmakedefine f_multiply_by_zero
 #cmakedefine f_multiply_by_two_powers
 
 // stany optymalizacji (wlacz/wylacz)
@@ -18,6 +19,13 @@
 #define F_DIVIDE_BY_TWO_POWERS	(true)
 #else
 #define F_DIVIDE_BY_TWO_POWERS	(false)
+#endif
+
+// mnożenie przez zero
+#ifdef f_multiply_by_zero
+#define F_MULTIPLY_BY_ZERO	(true)
+#else
+#define F_MULTIPLY_BY_ZERO	(false)
 #endif
 
 // mnożenie przez potęgi dwójki

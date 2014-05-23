@@ -87,7 +87,6 @@ get_multiply(const std::uint32_t& offset = 0)
 
 // TODO: możliwe optymalizacje:
 //	+ WIEKSZA * MNIEJSZA (dla stala * zmienna, zmienna * stala, zmienna * zmienna) w kodzie maszynowym
-//	+ mnożenie x0 => ZERO
 std::string
 code::multiply(const ISymbolTable::Entry& a,
 		const ISymbolTable::Entry& b,
@@ -96,7 +95,16 @@ code::multiply(const ISymbolTable::Entry& a,
 	std::ostringstream machine_code;
 
 	std::uint64_t apower = 0, bpower = 0;
-	if (F_MULTIPLY_BY_TWO_POWERS and (
+	if (F_MULTIPLY_BY_ZERO and (
+			(a.has_value and (std::int32_t) a.value.find_first_not_of('0') == -1) or
+			(b.has_value and (std::int32_t) b.value.find_first_not_of('0') == -1) ))
+	{
+		// optymalizacja: mnozenie przez zero
+		std::cerr << ">> optymalizacja: mnozenie przez 0\n";
+		
+		machine_code << ZERO << "\n";
+	}
+	else if (F_MULTIPLY_BY_TWO_POWERS and (
 			(a.has_value and helper::is_two_power(&apower, a.value)) or
 			(b.has_value and helper::is_two_power(&bpower, b.value)) ))
 	{
@@ -119,7 +127,7 @@ code::multiply(const ISymbolTable::Entry& a,
 
 		machine_code << LOAD << " " << bp->current_addr << "\n";
 		for (std::uint64_t i = 0; i < power; i++) machine_code << SHL << "\n";		
-	}
+	} 
 	else
 	{
 		machine_code
