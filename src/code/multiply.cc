@@ -108,15 +108,15 @@ code::multiply(const ISymbolTable::Entry& a,
 	}
 	else if (F_MULTIPLY_BY_TWO_POWERS and (atwopower or btwopower))
 	{
-		std::uint32_t power = apower;
+		std::uint32_t power = bpower;
 		const ISymbolTable::Entry *multiplier = &a, *multiplicator = &b;
 		if (atwopower)
 		{
-			power = bpower;
+			power = apower;
 			multiplier = &b;
 			multiplicator = &a;
 		}
-		
+
 		// optymalizacja: mnożenie przez potęgę dwójki
 		std::cerr
 				<< ">> optymalizacja: mnożenie przez 2^i, value = "
