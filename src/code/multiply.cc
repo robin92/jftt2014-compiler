@@ -85,8 +85,8 @@ get_multiply(const std::uint32_t& offset = 0)
 	return machine_code.str();
 }
 
-// TODO: możliwe optymalizacje:
-//	+ WIEKSZA * MNIEJSZA (dla stala * zmienna, zmienna * stala, zmienna * zmienna) w kodzie maszynowym
+
+
 std::string
 code::multiply(const ISymbolTable::Entry& a,
 		const ISymbolTable::Entry& b,
@@ -142,7 +142,7 @@ code::multiply(const ISymbolTable::Entry& a,
 				<< LOAD << " " << "2" << "\n"
 				<< STORE << " " << "1" << "\n"
 				<< LOAD << " " << "0" << "\n"
-				<< get_multiply(offset + 14)					// dodano 4 komendy
+				<< get_multiply(offset + 14)					// dodano 14 komend
 				<< LOAD << " " << "2" << "\n";					// załadowanie wyniku do rejestru a
 	}
 
