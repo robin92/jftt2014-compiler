@@ -1,12 +1,23 @@
 #ifndef COMPILER_CONFIG_HH_
 #define COMPILER_CONFIG_HH_
 
+#cmakedefine f_add_one
 #cmakedefine f_divide_by_zero
 #cmakedefine f_divide_by_two_powers
 #cmakedefine f_multiply_by_zero
 #cmakedefine f_multiply_by_two_powers
 
+//
 // stany optymalizacji (wlacz/wylacz)
+//
+
+// dodawanie jedynki
+#ifdef f_add_one
+#define F_ADD_ONE   (true)
+#else
+#define F_ADD_ONE   (false)
+#endif
+
 // dzielenie przez 0
 #ifdef f_divide_by_zero
 #define F_DIVIDE_BY_ZERO	(true)
