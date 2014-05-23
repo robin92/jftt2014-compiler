@@ -11,11 +11,18 @@
 // stany optymalizacji (wlacz/wylacz)
 //
 
+// dodawanie zera
+#ifdef f_add_zero
+#define F_ADD_ZERO	(true)
+#else
+#define F_ADD_ZERO	(false)
+#endif
+
 // dodawanie jedynki
 #ifdef f_add_one
-#define F_ADD_ONE   (true)
+#define F_ADD_ONE	(true)
 #else
-#define F_ADD_ONE   (false)
+#define F_ADD_ONE	(false)
 #endif
 
 // dzielenie przez 0
