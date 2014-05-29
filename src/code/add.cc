@@ -22,7 +22,7 @@ code::add(const ISymbolTable::Entry& a, const ISymbolTable::Entry& b)
 	{
 	    // optymalizacja: dodawanie zera
 		std::cerr << ">> optymalizacja: +0\n";
-    
+
 		const ISymbolTable::Entry *sym = not(aIsZero) ? &a : &b;
 		machine_code << LOAD << " " << sym->current_addr << "\n";
 	}

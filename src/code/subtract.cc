@@ -3,8 +3,7 @@
 #include <sstream>
 #include <string>
 
-#include <gmpxx.h>
-
+#include "config.hh"
 #include "code.hh"
 
 
@@ -16,22 +15,27 @@ code::subtract(const ISymbolTable::Entry& a, const ISymbolTable::Entry& b)
 {
 	std::ostringstream machine_code;
 
-	// optymalizacja: oba symbole to stałe, jeśli a <= b to a - b <= 0
-	// a w maszyna nie obsługuje liczb < 0, koszt wyzerowania jest mniejszy
-	// niż koszt odejmowania
-	bool done = false;
-	if (a.has_value and b.has_value)
+	bool aIsZero = a.has_value and (std::int32_t) a.value.find_first_not_of('0') == -1,
+			bIsZero = b.has_value and (std::int32_t) b.value.find_first_not_of('0') == -1;
+	bool bIsOne = b.has_value and b.value == "1";
+	if (F_SUB_ZERO and (aIsZero or bIsZero))
 	{
-		mpz_class an(a.value), bn(b.value);
-		if ( an <= bn )
-		{
-			machine_code
-					<< code::cmd::ZERO << "\n";
-			done = true;
-		}
-	}
+		// optymalizacja: odejmowanie zera
+		std::cerr << ">> optymalizacja: -0\n";
 
-	if (not(done))
+		if (aIsZero) machine_code << ZERO << "\n";					// odejmowanie od zera = 0
+		else machine_code << LOAD << " " << a.current_addr << "\n";	// odejmowanie zera
+	}
+	else if (F_SUB_ONE and bIsOne)
+	{
+		// optymalizacja: odejmowanie jedynki
+		std::cerr << ">> optymalizacja: -1\n";
+
+		machine_code
+				<< LOAD << " " << a.current_addr << "\n"
+				<< DEC << "\n";
+	}
+	else
 	{
 		machine_code
 				<< LOAD << " " << a.current_addr << "\n"
