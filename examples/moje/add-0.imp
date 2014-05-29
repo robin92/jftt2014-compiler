@@ -1,0 +1,23 @@
+CONST
+    zero = 0
+    one = 1
+VAR
+    a
+BEGIN
+    a := 512;
+    WRITE a;
+    
+    a := a + zero;
+    WRITE a;
+    
+    a := zero + a;
+    WRITE a;
+    
+    a := a + one;
+    WRITE a;
+    
+    a := 512;
+    a := one + a;
+    WRITE a;
+END
+

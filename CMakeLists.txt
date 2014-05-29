@@ -34,6 +34,8 @@ include_directories (
 # domyślne flagi
 option (f_add_zero "aktywuj optymalizację dodawania zera" ON)
 option (f_add_one "aktywuj optymalizację dodawania jedynki" ON)
+option (f_sub_zero "aktywuj optymalizację odejmowania zera" ON)
+option (f_sub_one "aktywuj optymalizację odejmowania jedynki" ON)
 option (f_divide_by_zero "aktywuj optymalizację dzielenia przez 0" ON)
 option (f_divide_by_two_powers "aktywuj optymalizację dzielenia przez potęgi dwójki" ON)
 option (f_multiply_by_zero "aktywuj optymalizację mnożenia przez 0" ON)
