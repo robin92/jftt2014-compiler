@@ -9,7 +9,7 @@
 
 # GMPXX needs GMP
 
-find_package( GMP QUIET )
+find_package( GMP )
 
 if(GMP_FOUND)
 
