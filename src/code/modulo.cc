@@ -4,8 +4,7 @@
 #include <sstream>
 #include <string>
 
-#include <gmpxx.h>
-
+#include "config.hh"
 #include "code.hh"
 
 
@@ -19,8 +18,6 @@ get_modulo_code(std::uint32_t *length, const std::uint32_t& offset = 0);
 using namespace code::cmd;
 
 // FIXME: czy dziala zgodnie ze specyfikacja?
-// TODO: możliwe optymalizacje:
-//	+ % 2 => JODD
 std::string
 code::modulo(
 		const ISymbolTable::Entry& a,
@@ -28,20 +25,38 @@ code::modulo(
 		const std::uint32_t offset)
 {
 	std::ostringstream machine_code;
-	std::uint32_t padLen = 0, divLen = 0;
 
-	std::string padding = helper::pad_left(&padLen, offset + 4);
-	std::string mod = get_modulo_code(&divLen, offset + 4 + padLen);
+	bool bIsTwo = b.has_value and b.value == "2";
+	if (F_MODULO_TWO and bIsTwo)
+	{
+		// optymalizacja: x mod 2
+		std::cerr << ">> optymalizacja: mod 2\n";
 
-	machine_code
-			<< LOAD << " " << a.current_addr << "\n"
-			<< STORE << " " << 0 << "\n"
-			<< LOAD << " " << b.current_addr << "\n"
-			<< STORE << " " << 1 << "\n"
-			<< padding
-			<< mod
-			<< LOAD << " " << 0 << "\n";
+		machine_code
+				<< LOAD << " " << a.current_addr << "\n"
+				<< JODD << " " << offset + 4 << "\n"
+				<< ZERO << "\n"
+				<< JUMP << " " << offset + 6 << "\n"
+				<< ZERO << "\n"
+				<< INC << "\n";
+	}
+	else
+	{
+		std::uint32_t padLen = 0, divLen = 0;
 
+		std::string padding = helper::pad_left(&padLen, offset + 4);
+		std::string mod = get_modulo_code(&divLen, offset + 4 + padLen);
+
+		machine_code
+				<< LOAD << " " << a.current_addr << "\n"
+				<< STORE << " " << 0 << "\n"
+				<< LOAD << " " << b.current_addr << "\n"
+				<< STORE << " " << 1 << "\n"
+				<< padding
+				<< mod
+				<< LOAD << " " << 0 << "\n";
+	}
+	
 	return machine_code.str();
 }
 

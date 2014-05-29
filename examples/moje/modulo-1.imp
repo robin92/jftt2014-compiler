@@ -1,0 +1,18 @@
+(* program wczytuje liczby z konsoli az napotka na liczbe parzysta *)
+CONST
+    zero = 0
+    one = 1
+    two = 2
+VAR
+    a b ctr
+BEGIN
+    b := one;
+    ctr := zero;
+    WHILE b == one DO
+        READ a;
+        b := a % two;
+        ctr := ctr + one;
+    END
+    WRITE ctr;
+END
+

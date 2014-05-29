@@ -40,6 +40,7 @@ option (f_divide_by_zero "aktywuj optymalizację dzielenia przez 0" ON)
 option (f_divide_by_two_powers "aktywuj optymalizację dzielenia przez potęgi dwójki" ON)
 option (f_multiply_by_zero "aktywuj optymalizację mnożenia przez 0" ON)
 option (f_multiply_by_two_powers "aktywuj optymalizację mnożenia przez potęgi dwójki" ON)
+option (f_modulo_two "aktywuj optymalizację modulo dwa" ON)
 
 configure_file (${SOURCEDIR}/config.hh.in ${SOURCEDIR}/config.hh)
 
