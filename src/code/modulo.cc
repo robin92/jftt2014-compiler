@@ -17,7 +17,6 @@ get_modulo_code(std::uint32_t *length, const std::uint32_t& offset = 0);
 
 using namespace code::cmd;
 
-// FIXME: czy dziala zgodnie ze specyfikacja?
 std::string
 code::modulo(
 		const ISymbolTable::Entry& a,
@@ -26,7 +25,8 @@ code::modulo(
 {
 	std::ostringstream machine_code;
 
-	bool bIsTwo = b.has_value and b.value == "2";
+	bool bIsZero = b.has_value and (std::int32_t) b.value.find_first_not_of('0') == -1,
+			bIsTwo = b.has_value and b.value == "2";
 	if (F_MODULO_TWO and bIsTwo)
 	{
 		// optymalizacja: x mod 2
@@ -42,16 +42,18 @@ code::modulo(
 	}
 	else
 	{
-		std::uint32_t padLen = 0, divLen = 0;
+		std::uint32_t padLen = 0, modLen = 0;
 
-		std::string padding = helper::pad_left(&padLen, offset + 4);
-		std::string mod = get_modulo_code(&divLen, offset + 4 + padLen);
+		std::string padding = helper::pad_left(&padLen, offset + 6);
+		std::string mod = get_modulo_code(&modLen, offset + 6 + padLen);
 
 		machine_code
 				<< LOAD << " " << a.current_addr << "\n"
 				<< STORE << " " << 0 << "\n"
 				<< LOAD << " " << b.current_addr << "\n"
 				<< STORE << " " << 1 << "\n"
+				<< LOAD << " " << 1 << "\n"							// jeśli b == 0 to wynikiem jest 0
+				<< JZ << " " << offset + padLen + modLen + 1 << "\n"
 				<< padding
 				<< mod
 				<< LOAD << " " << 0 << "\n";
