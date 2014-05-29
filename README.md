@@ -23,8 +23,6 @@ cmake CMakeLists.txt
 
 Domyślnie program zostanie skonfigurowany pod budowanie wersji produkcyjnej (*release*), w celu zbudowania wersji deweloperskiej należy dopisać ``-DCMAKE_BUILD_TYPE=debug``.
 
-TODO: ścieżka do GMP
-
 ##### Kompilacja
 
 Gdy system budowania wygeneruje wszystkie pliki wystarczy wpisać
