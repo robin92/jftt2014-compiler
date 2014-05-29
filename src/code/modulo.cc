@@ -27,7 +27,14 @@ code::modulo(
 
 	bool bIsZero = b.has_value and (std::int32_t) b.value.find_first_not_of('0') == -1,
 			bIsTwo = b.has_value and b.value == "2";
-	if (F_MODULO_TWO and bIsTwo)
+	if (F_MODULO_ZERO and bIsZero)
+	{
+		// optymalizacja: x mod 0
+		std::cerr << ">> optymalizacja: mod 0\n";
+	
+		machine_code << ZERO << " " << "\n";
+	}
+	else if (F_MODULO_TWO and bIsTwo)
 	{
 		// optymalizacja: x mod 2
 		std::cerr << ">> optymalizacja: mod 2\n";

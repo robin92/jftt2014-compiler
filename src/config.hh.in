@@ -9,6 +9,7 @@
 #cmakedefine f_divide_by_two_powers
 #cmakedefine f_multiply_by_zero
 #cmakedefine f_multiply_by_two_powers
+#cmakedefine f_modulo_zero
 #cmakedefine f_modulo_two
 
 //
@@ -69,6 +70,13 @@
 #define F_MULTIPLY_BY_TWO_POWERS	(true)
 #else
 #define F_MULTIPLY_BY_TWO_POWERS	(false)
+#endif
+
+// modulo dwa
+#ifdef f_modulo_zero
+#define F_MODULO_ZERO	(true)
+#else
+#define F_MODULO_ZERO	(false)
 #endif
 
 // modulo dwa
