@@ -269,7 +269,6 @@ handle_if(
 	std::uint32_t condLen = 0;
 	std::int32_t condErr = parse_condition(&condition, &condLen, self->cond, symtbl, offset);
 
-	// TODO: wymaga rzetelnych testów
 	std::string thenClause, elseClause;
 	std::uint32_t thenLen = 0, elseLen = 0;
 	std::int32_t thenErr = parse_commands(&thenClause, &thenLen, self->thencmds, symtbl, offset + condLen + 1),	

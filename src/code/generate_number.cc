@@ -24,8 +24,6 @@ get_leftmost_bit(std::string* binnum)
 std::string
 code::generate_number(const std::string& decnum)
 {
-	std::cerr << ">> generowanie kodu dla liczby " << decnum << "\n";
-
 	std::list<std::string> lines;
 	mpz_class number(decnum);
 	std::string bin = number.get_str(2);

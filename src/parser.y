@@ -108,7 +108,6 @@ program:
 		for (Command *cmd : $6->cmds)
 		{
 			std::uint32_t length = 0;
-			std::cerr << ">> command: " << Command::str(cmd->type) << "\n";
 		
 			if ((*cmd)(std::cout, &length, symtbl, totalLength) != 0) return ERROR;
 			totalLength += length;
@@ -117,15 +116,12 @@ program:
 		std::cout << code::cmd::HALT << "\n";
 		totalLength++;
 
-		std::cerr
-				<< ">> kompilacja zakończona, program wynikowy ma " << totalLength << " instrukcji\n";
+		std::cerr << ">> kompilacja zakończona, program wynikowy ma " << totalLength << " instrukcji\n";
 	}
 ;
 
 cdeclarations:
 	cdeclarations IDENTIFIER OPERATOR_CONST_ASSIGNMENT NUM	{
-		fprintf(stderr, ">> nowa stała: [%s]: %ld\n", $2, $4);
-		
 		if (symtbl->contains($2)) {
 			std::ostringstream oss;
 			oss << "identifier '" << $2 << "' already defined";
@@ -154,21 +150,19 @@ cdeclarations:
 
 vdeclarations:
 	vdeclarations IDENTIFIER {
-		fprintf(stderr, ">> nowa zmienna: [%s]\n", $2);
-		
 		if (symtbl->contains($2)) {
 			std::ostringstream oss;
 			oss << "identifier '" << $2 << "' already defined";
 			yyerror(oss.str());
 			return ERROR;
 		}
-		
+
 		ISymbolTable::Entry entry;
 		entry.current_addr = next_mem_addr();
-		
+
 		symtbl->insert($2);
 		symtbl->update($2, entry);
-		
+
 		assert(symtbl->contains($2));
 	}
 |	%empty

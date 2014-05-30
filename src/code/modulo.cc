@@ -33,9 +33,9 @@ code::modulo(
 		std::cerr << ">> optymalizacja: a % b\n";
 		mpz_class av(a.value), bv(b.value), res = av % bv;
 		if (av == mpz_class("0") or bv == mpz_class("0") or bv == mpz_class("1")) res = mpz_class("0");
-		
+
 		machine_code << generate_number(res.get_str());
-		
+
 		return machine_code.str();
 	}
 
@@ -45,7 +45,7 @@ code::modulo(
 	{
 		// optymalizacja: x mod 0
 		std::cerr << ">> optymalizacja: mod 0\n";
-	
+
 		machine_code << ZERO << " " << "\n";
 	}
 	else if (F_MODULO_TWO and bIsTwo)
@@ -89,8 +89,7 @@ std::string
 get_modulo_code(std::uint32_t *length, const std::uint32_t& offset)
 {
 	std::ostringstream machine_code;
-	std::cerr << ">> div, offset = " << offset << "\n";
-	
+
 	machine_code
 			<< LOAD << " " << 2 << "\n"				//	while d > 0 do
 			<< JZ << " " << offset + 15 << "\n"
@@ -107,10 +106,10 @@ get_modulo_code(std::uint32_t *length, const std::uint32_t& offset)
 			<< SHR << "\n"
 			<< STORE << " " << 2 << "\n"
 			<< JUMP << " " << offset << "\n";		// end			
-	
+
 	std::string str = machine_code.str();
 	*length = std::count(str.begin(), str.end(), '\n');
-	
+
 	return str;
 }
 
