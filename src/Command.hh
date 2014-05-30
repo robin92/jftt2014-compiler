@@ -31,6 +31,8 @@ struct Command
 	Commands *elsecmds		{nullptr};
 	Commands *docmds		{nullptr};
 	
+	virtual ~Command();
+	
 	std::int32_t generate(
 			std::ostream& output,
 			std::uint32_t* length,

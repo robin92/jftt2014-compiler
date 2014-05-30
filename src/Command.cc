@@ -114,6 +114,41 @@ Command::str(Command::Type type)
 
 
 
+Command::~Command()
+{
+	if (expr)
+	{
+		delete expr;
+		expr = nullptr;
+	}
+	
+	if (cond)
+	{
+		delete cond;
+		cond = nullptr;
+	}
+	
+	if (thencmds)
+	{
+		delete thencmds;
+		thencmds = nullptr;
+	}
+	
+	if (elsecmds)
+	{
+		delete elsecmds;
+		elsecmds = nullptr;
+	}
+	
+	if (docmds)
+	{
+		delete docmds;
+		docmds = nullptr;
+	}
+}
+
+
+
 std::int32_t
 Command::generate(
 		std::ostream& output,

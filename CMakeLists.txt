@@ -76,6 +76,7 @@ add_executable (kompilator
 		${SOURCEDIR}/scanner.lex.cc
 		${SOURCEDIR}/ISymbolTable.cc
 		${SOURCEDIR}/SymbolTable.cc
+		${SOURCEDIR}/Commands.cc
 		${SOURCEDIR}/Command.cc
 	)
 target_link_libraries (kompilator

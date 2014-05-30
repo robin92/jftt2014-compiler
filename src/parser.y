@@ -117,6 +117,12 @@ program:
 		totalLength++;
 
 		std::cerr << ">> kompilacja zakończona, program wynikowy ma " << totalLength << " instrukcji\n";
+
+		if ($6)
+		{
+			delete $6;
+			$6 = nullptr;
+		}
 	}
 ;
 
