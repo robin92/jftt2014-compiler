@@ -12,6 +12,7 @@
 #cmakedefine f_modulo_zero
 #cmakedefine f_modulo_two
 #cmakedefine f_cond_eq_zero
+#cmakedefine f_cond_ne_zero
 #cmakedefine f_cond_gt_zero
 
 //
@@ -93,6 +94,13 @@
 #define F_COND_EQ_ZERO	(true)
 #else
 #define F_COND_EQ_ZERO	(false)
+#endif
+
+// x != 0
+#ifdef f_cond_ne_zero
+#define F_COND_NE_ZERO	(true)
+#else
+#define F_COND_NE_ZERO	(false)
 #endif
 
 // x > 0
