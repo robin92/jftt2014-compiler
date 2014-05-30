@@ -42,7 +42,8 @@ option (f_multiply_by_zero "aktywuj optymalizację mnożenia przez 0" ON)
 option (f_multiply_by_two_powers "aktywuj optymalizację mnożenia przez potęgi dwójki" ON)
 option (f_modulo_zero "aktywuj optymalizację modulo zero" ON)
 option (f_modulo_two "aktywuj optymalizację modulo dwa" ON)
-option (f_cond_eq_zero "aktywuj optymalizację == 0" ON)
+option (f_cond_eq_zero "aktywuj optymalizację warunku == 0" ON)
+option (f_cond_gt_zero "aktywuj optymalizację warunku > 0" ON)
 
 configure_file (${SOURCEDIR}/config.hh.in ${SOURCEDIR}/config.hh)
 

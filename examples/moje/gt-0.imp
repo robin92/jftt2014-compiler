@@ -1,0 +1,23 @@
+(* program sprawdzający optymalizację warunku x > 0 *)
+CONST
+	zero = 0
+	one = 1
+VAR
+	a ctr
+BEGIN
+	READ a;
+	IF a > zero THEN
+		WRITE one;
+	ELSE
+		WRITE zero;
+	END
+	
+	READ a;
+	ctr := zero;
+	WHILE a > zero DO
+		READ a;
+		ctr := ctr + one;
+	END
+	WRITE ctr;
+END
+
