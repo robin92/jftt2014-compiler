@@ -1,0 +1,14 @@
+(* program sprawdza poprawność odejmowań wykonywanych w kompilatorze *)
+CONST
+	aa = 1234
+	ab = 4321
+VAR
+	a
+BEGIN
+	a := aa - ab;
+	WRITE a;
+	
+	a := ab - aa;
+	WRITE a;
+END
+
