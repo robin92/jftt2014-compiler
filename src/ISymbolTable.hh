@@ -1,3 +1,10 @@
+/*
+ * Copyright 2014 Rafał Bolanowski
+ * All rights reserved.
+ *
+ * For licensing information please see the LICENSE file.
+ */
+
 #ifndef COMPILER_ISYMBOLTABLE_HH_
 #define COMPILER_ISYMBOLTABLE_HH_
 

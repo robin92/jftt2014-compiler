@@ -54,6 +54,12 @@
 #else
 #define F_DIVIDE_BY_ZERO	(false)
 #endif
+/*
+ * Copyright 2014 Rafał Bolanowski
+ * All rights reserved.
+ *
+ * For licensing information please see the LICENSE file.
+ */
 
 // dzielenie przez potęgi dwójki
 #ifdef f_divide_by_two_powers

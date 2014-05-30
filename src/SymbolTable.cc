@@ -1,3 +1,9 @@
+/*
+ * Copyright 2014 Rafał Bolanowski
+ * All rights reserved.
+ *
+ * For licensing information please see the LICENSE file.
+ */
 
 #include <stdexcept>
 
