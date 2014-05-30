@@ -14,17 +14,15 @@ realizacja projektu zaliczeniowego na kurs Języki formalne i techniki translacj
   + [gmp](https://gmplib.org/) ``>= 6.0.0`` (testowane na wersji ``6.0.0``)
   + ``gmpxx`` - C++ wrapper na ``gmp``, trzeba odpowiednio skompilować ``gmp``
 
-##### Konfiguracja
-
+#### Konfiguracja
 Żeby wygenerować odpowiednio skonfigurowany plik *Makefile* należy wpisać komendę
 ```
 cmake CMakeLists.txt
 ```
 
-Domyślnie program zostanie skonfigurowany pod budowanie wersji produkcyjnej (*release*), w celu zbudowania wersji deweloperskiej należy dopisać ``-DCMAKE_BUILD_TYPE=debug``.
+Domyślnie program zostanie skonfigurowany pod budowanie wersji produkcyjnej (*release*), w celu zbudowania wersji deweloperskiej należy dopisać ``-DCMAKE_BUILD_TYPE=debug``. Ponadto domyślnie maszyna wirtualna nie jest budowana. By ją zbudować dopisz ``-DBUILD_VM=on``.
 
-##### Kompilacja
-
+#### Kompilacja
 Gdy system budowania wygeneruje wszystkie pliki wystarczy wpisać
 ```
 make
@@ -35,8 +33,10 @@ by rozpocząć proces kompilacji. Dodanie opcji ``-j N`` spowoduje uruchomienie 
 Po kompilacji wszystko będzie znajdować się w podkatalogu ``build/``.
 
 ### Obsługa programu
-
-TODO
+Kompilator czyta plik wejściowy ze standardowego wejścia (*stdin*) i zwraca kod na maszynę wirtualną na standardowe wyjście (*stdout*). Wszystkie logi są wysyłane na *stderr*. Przykładowe wywołanie kompilatora dla jednego z plików z załączonych przykładów:
+```
+?> cat examples/moje/divide-0.imp | build/bin/kompilator > divide-0.mr
+```
 
 =================
 
