@@ -3,6 +3,8 @@
 #include <sstream>
 #include <string>
 
+#include <gmpxx.h>
+
 #include "config.hh"
 #include "code.hh"
 
@@ -14,6 +16,18 @@ std::string
 code::subtract(const ISymbolTable::Entry& a, const ISymbolTable::Entry& b)
 {
 	std::ostringstream machine_code;
+
+	if (F_CONST_EXPR and (a.has_value and b.has_value))	// obie stałe
+	{
+		// optymalizacja: a - b
+		std::cerr << ">> optymalizacja: a - b\n";
+		mpz_class av(a.value), bv(b.value), res = av - bv;
+		if (av <= bv) res = mpz_class("0");
+		
+		machine_code << generate_number(res.get_str());
+		
+		return machine_code.str();
+	}
 
 	bool aIsZero = a.has_value and (std::int32_t) a.value.find_first_not_of('0') == -1,
 			bIsZero = b.has_value and (std::int32_t) b.value.find_first_not_of('0') == -1;

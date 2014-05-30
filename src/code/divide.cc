@@ -4,6 +4,8 @@
 #include <sstream>
 #include <string>
 
+#include <gmpxx.h>
+
 #include "config.hh"
 #include "code.hh"
 
@@ -17,9 +19,6 @@ get_divide_code(std::uint32_t *length, const std::uint32_t& offset = 0);
 
 using namespace code::cmd;
 
-// FIXME: dzielenie przez 0 ma dawać 0, teraz zacina
-// TODO: możliwe optymalizacje:
-//	+ /0 => ZERO
 std::string
 code::divide(
 		const ISymbolTable::Entry& a,
@@ -27,7 +26,19 @@ code::divide(
 		const std::uint32_t offset)
 {
 	std::ostringstream machine_code;
-	
+
+	if (F_CONST_EXPR and (a.has_value and b.has_value))	// obie stałe
+	{
+		// optymalizacja: a / b
+		std::cerr << ">> optymalizacja: a / b\n";
+		mpz_class av(a.value), bv(b.value), res = av / bv;
+		if (av < bv or av == mpz_class("0") or bv == mpz_class("0")) res = mpz_class("0");
+		
+		machine_code << generate_number(res.get_str());
+		
+		return machine_code.str();
+	}	
+
 	std::uint64_t power = 0;
 	if (F_DIVIDE_BY_TWO_POWERS and
 			(b.has_value and helper::is_two_power(&power, b.value)))	// dzielnk jest potęgą dwójki

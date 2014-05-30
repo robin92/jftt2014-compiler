@@ -94,6 +94,17 @@ code::multiply(const ISymbolTable::Entry& a,
 {
 	std::ostringstream machine_code;
 
+	if (F_CONST_EXPR and (a.has_value and b.has_value))	// obie stałe
+	{
+		// optymalizacja: a * b
+		std::cerr << ">> optymalizacja: a * b\n";
+		mpz_class av(a.value), bv(b.value), res = av * bv;
+		
+		machine_code << generate_number(res.get_str());
+		
+		return machine_code.str();
+	}
+
 	std::uint64_t apower = 0, bpower = 0;
 	bool atwopower = a.has_value and helper::is_two_power(&apower, a.value),
 			btwopower = b.has_value and helper::is_two_power(&bpower, b.value); 

@@ -14,6 +14,7 @@
 #cmakedefine f_cond_eq_zero
 #cmakedefine f_cond_ne_zero
 #cmakedefine f_cond_gt_zero
+#cmakedefine f_const_expr
 
 //
 // stany optymalizacji (wlacz/wylacz)
@@ -108,6 +109,13 @@
 #define F_COND_GT_ZERO	(true)
 #else
 #define F_COND_GT_ZERO	(false)
+#endif
+
+// stałe wyrażenia
+#ifdef f_const_expr
+#define F_CONST_EXPR	(true)
+#else
+#define F_CONST_EXPR	(false)
 #endif
 
 #endif  // COMPILER_CONFIG_HH_

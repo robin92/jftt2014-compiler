@@ -4,6 +4,8 @@
 #include <sstream>
 #include <string>
 
+#include <gmpxx.h>
+
 #include "config.hh"
 #include "code.hh"
 
@@ -24,6 +26,18 @@ code::modulo(
 		const std::uint32_t offset)
 {
 	std::ostringstream machine_code;
+
+	if (F_CONST_EXPR and (a.has_value and b.has_value))	// obie stałe
+	{
+		// optymalizacja: a % b
+		std::cerr << ">> optymalizacja: a % b\n";
+		mpz_class av(a.value), bv(b.value), res = av % bv;
+		if (av == mpz_class("0") or bv == mpz_class("0") or bv == mpz_class("1")) res = mpz_class("0");
+		
+		machine_code << generate_number(res.get_str());
+		
+		return machine_code.str();
+	}
 
 	bool bIsZero = b.has_value and (std::int32_t) b.value.find_first_not_of('0') == -1,
 			bIsTwo = b.has_value and b.value == "2";
