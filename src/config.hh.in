@@ -3,8 +3,10 @@
 
 #cmakedefine f_add_zero
 #cmakedefine f_add_one
+#cmakedefine f_add_inc
 #cmakedefine f_sub_zero
 #cmakedefine f_sub_one
+#cmakedefine f_sub_dec
 #cmakedefine f_divide_by_zero
 #cmakedefine f_divide_by_two_powers
 #cmakedefine f_multiply_by_zero
@@ -34,6 +36,13 @@
 #define F_ADD_ONE	(false)
 #endif
 
+// dodawanie zamienione na inkrementacje
+#ifdef f_add_one
+#define F_ADD_INC	(true)
+#else
+#define F_ADD_INC	(false)
+#endif
+
 // odejmowanie zera
 #ifdef f_sub_zero
 #define F_SUB_ZERO	(true)
@@ -46,6 +55,13 @@
 #define F_SUB_ONE	(true)
 #else
 #define F_SUB_ONE	(false)
+#endif
+
+// odejmowanie zamienione na dekrementacje
+#ifdef f_sub_dec
+#define F_SUB_DEC	(true)
+#else
+#define F_SUB_DEC	(false)
 #endif
 
 // dzielenie przez 0

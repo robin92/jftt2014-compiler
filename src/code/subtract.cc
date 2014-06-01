@@ -57,6 +57,21 @@ code::subtract(const ISymbolTable::Entry& a, const ISymbolTable::Entry& b)
 	}
 	else
 	{
+		if (F_SUB_DEC and b.has_value)
+		{
+			mpz_class bv(b.value);
+			if (bv < 100)
+			{
+				// optymalizacja: inkremetnacja zamiast dodawania
+				std::cerr << ">> optymalizacja: - => --\n";
+			
+				machine_code << LOAD << " " << a.current_addr << "\n";
+				for (std::int32_t i = 0; i < bv; i++) machine_code << DEC << "\n"; 
+			
+				return machine_code.str();
+			}
+		}
+	
 		machine_code
 				<< LOAD << " " << a.current_addr << "\n"
 				<< SUB << " " << b.current_addr << "\n";

@@ -64,6 +64,39 @@ code::add(const ISymbolTable::Entry& a, const ISymbolTable::Entry& b)
 	}
 	else
 	{
+		if (F_ADD_INC and (a.has_value or b.has_value))
+		{
+			if (a.has_value)
+			{
+				mpz_class av(a.value);
+				if (av < 100)
+				{
+					// optymalizacja: inkremetnacja zamiast dodawania
+					std::cerr << ">> optymalizacja: + => ++\n";
+				
+					machine_code << LOAD << " " << b.current_addr << "\n";
+					for (std::int32_t i = 0; i < av; i++) machine_code << INC << "\n"; 
+				
+					return machine_code.str();
+				}
+			}
+
+			if (b.has_value)
+			{
+				mpz_class bv(b.value);
+				if (bv < 100)
+				{
+					// optymalizacja: inkremetnacja zamiast dodawania
+					std::cerr << ">> optymalizacja: + => ++\n";
+				
+					machine_code << LOAD << " " << a.current_addr << "\n";
+					for (std::int32_t i = 0; i < bv; i++) machine_code << INC << "\n"; 
+				
+					return machine_code.str();
+				}
+			}
+		}
+		
 		machine_code
 				<< LOAD << " " << a.current_addr << "\n"
 				<< ADD << " " << b.current_addr << "\n";

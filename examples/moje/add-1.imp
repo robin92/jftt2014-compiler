@@ -1,0 +1,14 @@
+CONST
+    pocz = 12
+    stala = 77
+VAR
+    a
+BEGIN
+    a := pocz;
+    a := a + stala;
+    WRITE a;
+    
+    a := pocz;
+    a := stala + a;
+    WRITE a;
+END

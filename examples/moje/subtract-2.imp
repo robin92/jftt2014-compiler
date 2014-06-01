@@ -1,0 +1,10 @@
+CONST
+    c = 1145
+    stala = 99
+VAR
+    a
+BEGIN
+    a := c;
+    a := a - stala;
+    WRITE a;
+END
