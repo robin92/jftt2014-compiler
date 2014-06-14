@@ -1,35 +1,32 @@
-# https://svn.zib.de/lenne3d/lib/qpl_cgal/3.5.1/cmake/modules/FindGMPXX.cmake
-#
-# Try to find the GMPXX libraries
-# GMPXX_FOUND - system has GMPXX lib
-# GMPXX_INCLUDE_DIR - the GMPXX include directory
-# GMPXX_LIBRARIES - Libraries needed to use GMPXX
+# This file is distributed under the MIT License. See the accompanying file
+# LICENSE.txt or http://www.opensource.org/licenses/mit-license.php for terms
+# and conditions.
+# NOTE: GMP prefix is understood to be the path to the root of the GMP
+# installation library.
 
-# TODO: support Windows and MacOSX
+find_package (GMP REQUIRED)
 
-# GMPXX needs GMP
+set(GMPXX_PREFIX "" CACHE PATH "The path to the prefix of a GMPXX installation")
 
-find_package( GMP )
+find_path(GMPXX_INCLUDE_DIR gmpxx.h 
+		PATHS ${GMPXX_PREFIX}/include /usr/include /usr/local/include
+	)
 
-if(GMP_FOUND)
+find_library(GMPXX_LIBRARY NAMES gmpxx 
+		PATHS ${GMPXX_PREFIX}/lib /usr/lib /usr/local/lib
+	)
 
-  if (GMPXX_INCLUDE_DIR AND GMPXX_LIBRARIES)
-    # Already in cache, be silent
-    set(GMPXX_FIND_QUIETLY TRUE)
-  endif()
 
-  find_path(GMPXX_INCLUDE_DIR NAMES gmpxx.h 
-            PATHS ${GMP_INCLUDE_DIR_SEARCH}
-            DOC "The directory containing the GMPXX include files"
-           )
+if(GMPXX_INCLUDE_DIR AND GMPXX_LIBRARY)
+	get_filename_component(GMPXX_LIBRARY_DIR ${GMPXX_LIBRARY} PATH)
+	set(GMPXX_FOUND TRUE)
+endif()
 
-  find_library(GMPXX_LIBRARIES NAMES gmpxx
-               PATHS ${GMP_LIBRARIES_DIR_SEARCH}
-               DOC "Path to the GMPXX library"
-               )
-               
-  
-  
-  find_package_handle_standard_args(GMPXX "DEFAULT_MSG" GMPXX_LIBRARIES GMPXX_INCLUDE_DIR )
-
+if(GMPXX_FOUND)
+	MESSAGE(STATUS "Found GMPXX: ${GMPXX_LIBRARY}")
+else()
+   	if(GMPXX_FIND_REQUIRED)
+   		message (STATUS "GMPXX Include Dir: ${GMPXX_INCLUDE_DIR}")
+      		message(FATAL_ERROR "Could not find GMPXX")
+   	endif()
 endif()

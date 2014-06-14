@@ -10,11 +10,11 @@
 
 # NOTE: GMP prefix is understood to be the path to the root of the GMP
 # installation library.
-set(GMP_PREFIX "" CACHE PATH "The path to the prefix of a GMP installation")
-
+set (GMP_PREFIX "" CACHE PATH "The path to the prefix of a GMP installation")
+set (GMP_INCLUDE_HINT "" CACHE PATH "The path to the GMP include directory")
 
 find_path(GMP_INCLUDE_DIR gmp.h 
-	PATHS ${GMP_PREFIX}/include /usr/include /usr/local/include)
+	PATHS ${GMP_INCLUDE_HINT} ${GMP_PREFIX}/include /usr/include /usr/local/include)
 
 find_library(GMP_LIBRARY NAMES gmp 
 	PATHS ${GMP_PREFIX}/lib /usr/lib /usr/local/lib)
@@ -26,11 +26,10 @@ if(GMP_INCLUDE_DIR AND GMP_LIBRARY)
 endif()
 
 if(GMP_FOUND)
-   if(NOT GMP_FIND_QUIETLY)
-      MESSAGE(STATUS "Found GMP: ${GMP_LIBRARY}")
-   endif()
-elseif(GMP_FOUND)
-   if(GMP_FIND_REQUIRED)
-      message(FATAL_ERROR "Could not find GMP")
-   endif()
+	MESSAGE(STATUS "Found GMP: ${GMP_LIBRARY}")
+else()
+   	if(GMP_FIND_REQUIRED)
+		message (STATUS "GMP Include Dir: ${GMP_INCLUDE_DIR}")
+      		message(FATAL_ERROR "Could not find GMP")
+   	endif()
 endif()
