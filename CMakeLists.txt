@@ -86,8 +86,8 @@ add_executable (kompilator
 		${SOURCEDIR}/Command.cc
 	)
 target_link_libraries (kompilator
+		genvm
 		${GMP_LIBRARY}
 		${GMPXX_LIBRARIES}
-		genvm
 	)
 
