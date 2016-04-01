@@ -16,10 +16,10 @@ namespace code
     {
         const std::string SCAN    = "SCAN";
         const std::string PRINT    = "PRINT";
-        
+
         const std::string LOAD    = "LOAD";
         const std::string STORE    = "STORE";
-        
+
         const std::string ADD    = "ADD";
         const std::string SUB    = "SUB";
 
@@ -97,7 +97,7 @@ namespace code
 
     std::string
     subtract(const ISymbolTable::Entry& a, const ISymbolTable::Entry& b);
-    
+
     std::string
     multiply(
             const ISymbolTable::Entry& a,

@@ -81,7 +81,7 @@ parse_complex_expr(
         const ISymbolTable::Entry& entry,
         const Expression& expr,
         const std::uint32_t& offset = 0);
-        
+
 static inline
 std::int32_t
 parse_commands(
@@ -90,7 +90,7 @@ parse_commands(
         Commands *cmds,
         ISymbolTable *symtbl,
         const std::uint32_t& offset = 0);
-        
+
 static inline
 std::int32_t
 parse_condition(
@@ -114,7 +114,7 @@ Command::str(Command::Type type)
         case Type::WRITE: return "WRITE";
         default: return "UNDEFINED";
     }
-    
+
     return "UNDEFINED";
 }
 
@@ -127,25 +127,25 @@ Command::~Command()
         delete expr;
         expr = nullptr;
     }
-    
+
     if (cond)
     {
         delete cond;
         cond = nullptr;
     }
-    
+
     if (thencmds)
     {
         delete thencmds;
         thencmds = nullptr;
     }
-    
+
     if (elsecmds)
     {
         delete elsecmds;
         elsecmds = nullptr;
     }
-    
+
     if (docmds)
     {
         delete docmds;
@@ -176,7 +176,7 @@ Command::generate(
             break;
 
         case Type::WRITE:
-            err = handle_write(&tmp, length, symtbl, offset, this);    
+            err = handle_write(&tmp, length, symtbl, offset, this);
             break;
 
         case Type::IF:
@@ -190,11 +190,11 @@ Command::generate(
         default:
             break;
     }
-    
+
     output << tmp;
     return err;
 }
-    
+
 std::int32_t
 Command::operator() (
         std::ostream& output,
@@ -223,7 +223,7 @@ handle_assignment(
 {
     std::ostringstream machine_code;
     ISymbolTable::Entry entry = symtbl->get(self->identifier);
-    
+
     switch (self->expr->type)
     {
         // przypisywanie zmiennej wartości numerycznej
@@ -238,7 +238,7 @@ handle_assignment(
             {
                 ISymbolTable::Entry remoteEntry = symtbl->get(self->expr->identifier);
                 machine_code
-                        << code::copy_value(entry, remoteEntry);    
+                        << code::copy_value(entry, remoteEntry);
             }
             break;
 
@@ -249,7 +249,7 @@ handle_assignment(
         default:
             break;
     }
-    
+
     *out = machine_code.str();
     *length = count_lines(*out);
 
@@ -268,7 +268,7 @@ handle_read(
 
     ISymbolTable::Entry entry = symtbl->get(self->identifier);
     machine_code
-            << code::cmd::SCAN << " " << entry.current_addr << "\n";            
+            << code::cmd::SCAN << " " << entry.current_addr << "\n";
 
     *out = machine_code.str();
     *length = count_lines(*out);
@@ -288,7 +288,7 @@ handle_write(
 
     ISymbolTable::Entry entry = symtbl->get(self->identifier);
     machine_code
-            << code::cmd::PRINT << " " << entry.current_addr << "\n";            
+            << code::cmd::PRINT << " " << entry.current_addr << "\n";
 
     *out = machine_code.str();
     *length = count_lines(*out);
@@ -312,7 +312,7 @@ handle_if(
 
     std::string thenClause, elseClause;
     std::uint32_t thenLen = 0, elseLen = 0;
-    std::int32_t thenErr = parse_commands(&thenClause, &thenLen, self->thencmds, symtbl, offset + condLen + 1),    
+    std::int32_t thenErr = parse_commands(&thenClause, &thenLen, self->thencmds, symtbl, offset + condLen + 1),
             elseErr = parse_commands(&elseClause, &elseLen, self->elsecmds, symtbl, offset + condLen + thenLen + 2);
 
     machine_code
@@ -404,14 +404,14 @@ parse_complex_expr(
                         << code::divide(first, second, offset)
                         << code::cmd::STORE << " " << entry.current_addr << "\n";
             }
-            break;        
+            break;
 
 
         case Expression::Operation::MODULO:
             {
                 machine_code
                         << code::modulo(first, second, offset)
-                        << code::cmd::STORE << " " << entry.current_addr << "\n";            
+                        << code::cmd::STORE << " " << entry.current_addr << "\n";
             }
             break;
 

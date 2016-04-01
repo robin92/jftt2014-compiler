@@ -28,9 +28,9 @@ code::add(const ISymbolTable::Entry& a, const ISymbolTable::Entry& b)
         // optymalizacja: a + b
         std::cerr << ">> optymalizacja: a + b\n";
         mpz_class av(a.value), bv(b.value), res = av + bv;
-        
+
         machine_code << generate_number(res.get_str());
-        
+
         return machine_code.str();
     }
 
@@ -73,10 +73,10 @@ code::add(const ISymbolTable::Entry& a, const ISymbolTable::Entry& b)
                 {
                     // optymalizacja: inkremetnacja zamiast dodawania
                     std::cerr << ">> optymalizacja: + => ++\n";
-                
+
                     machine_code << LOAD << " " << b.current_addr << "\n";
-                    for (std::int32_t i = 0; i < av; i++) machine_code << INC << "\n"; 
-                
+                    for (std::int32_t i = 0; i < av; i++) machine_code << INC << "\n";
+
                     return machine_code.str();
                 }
             }
@@ -88,15 +88,15 @@ code::add(const ISymbolTable::Entry& a, const ISymbolTable::Entry& b)
                 {
                     // optymalizacja: inkremetnacja zamiast dodawania
                     std::cerr << ">> optymalizacja: + => ++\n";
-                
+
                     machine_code << LOAD << " " << a.current_addr << "\n";
-                    for (std::int32_t i = 0; i < bv; i++) machine_code << INC << "\n"; 
-                
+                    for (std::int32_t i = 0; i < bv; i++) machine_code << INC << "\n";
+
                     return machine_code.str();
                 }
             }
         }
-        
+
         machine_code
                 << LOAD << " " << a.current_addr << "\n"
                 << ADD << " " << b.current_addr << "\n";

@@ -85,7 +85,7 @@ code::modulo(
                 << mod
                 << LOAD << " " << 0 << "\n";
     }
-    
+
     return machine_code.str();
 }
 
@@ -101,7 +101,7 @@ get_modulo_code(std::uint32_t *length, const std::uint32_t& offset)
             << JZ << " " << offset + 15 << "\n"
             << LOAD << " " << 1 << "\n"                //         if b <= a then
             << SUB << " " << 0 << "\n"
-            << JG << " " << offset + 8 << "\n"    
+            << JG << " " << offset + 8 << "\n"
             << LOAD << " " << 0 << "\n"                //            a -= b;
             << SUB << " " << 1 << "\n"
             << STORE << " " << 0 << "\n"            //        end
@@ -111,7 +111,7 @@ get_modulo_code(std::uint32_t *length, const std::uint32_t& offset)
             << LOAD << " " << 2 << "\n"                //        d >>= 1;
             << SHR << "\n"
             << STORE << " " << 2 << "\n"
-            << JUMP << " " << offset << "\n";        // end            
+            << JUMP << " " << offset << "\n";        // end
 
     std::string str = machine_code.str();
     *length = std::count(str.begin(), str.end(), '\n');

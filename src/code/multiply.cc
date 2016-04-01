@@ -105,22 +105,22 @@ code::multiply(const ISymbolTable::Entry& a,
         // optymalizacja: a * b
         std::cerr << ">> optymalizacja: a * b\n";
         mpz_class av(a.value), bv(b.value), res = av * bv;
-        
+
         machine_code << generate_number(res.get_str());
-        
+
         return machine_code.str();
     }
 
     std::uint64_t apower = 0, bpower = 0;
     bool atwopower = a.has_value and helper::is_two_power(&apower, a.value),
-            btwopower = b.has_value and helper::is_two_power(&bpower, b.value); 
+            btwopower = b.has_value and helper::is_two_power(&bpower, b.value);
     if (F_MULTIPLY_BY_ZERO and (
             (a.has_value and (std::int32_t) a.value.find_first_not_of('0') == -1) or
             (b.has_value and (std::int32_t) b.value.find_first_not_of('0') == -1) ))
     {
         // optymalizacja: mnozenie przez zero
         std::cerr << ">> optymalizacja: mnozenie przez 0\n";
-        
+
         machine_code << ZERO << "\n";
     }
     else if (F_MULTIPLY_BY_TWO_POWERS and (atwopower or btwopower))
@@ -140,8 +140,8 @@ code::multiply(const ISymbolTable::Entry& a,
                 << multiplicator->value << ", power = " << power << "\n";
 
         machine_code << LOAD << " " << multiplier->current_addr << "\n";
-        for (std::uint64_t i = 0; i < power; i++) machine_code << SHL << "\n";        
-    } 
+        for (std::uint64_t i = 0; i < power; i++) machine_code << SHL << "\n";
+    }
     else
     {
         machine_code

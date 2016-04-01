@@ -22,7 +22,7 @@ std::string
 code::helper::pad_left(std::uint32_t *length, const std::uint32_t& offset)
 {
     std::ostringstream machine_code;
-    
+
     machine_code
             << ZERO << "\n"                            //    d := 1
             << INC << "\n"

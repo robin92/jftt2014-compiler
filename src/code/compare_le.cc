@@ -22,7 +22,7 @@ code::compare_le(
         const std::uint32_t offset)
 {
     std::ostringstream machine_code;
-    
+
     machine_code
             // ładowanie identyfikatorów do rejestrów do obliczeń
             << LOAD << " " << a.current_addr << "\n"
@@ -36,7 +36,7 @@ code::compare_le(
             << ZERO << "\n"
             << JUMP << " " << offset + 10 << "\n"
             << INC << "\n";
-                        
+
     return machine_code.str();
 }
 

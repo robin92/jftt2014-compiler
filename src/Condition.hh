@@ -22,7 +22,7 @@ struct Condition
     };
 
     typedef std::pair<std::string, std::string> IdentifierPair;
-    
+
     Type type            {Type::UNDEFINED};
     IdentifierPair ids    {};
 };

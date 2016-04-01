@@ -27,9 +27,9 @@ struct Command
         READ,
         WRITE,
     };
-    
+
     static std::string str(Type type);
-    
+
     Type type                {Type::UNDEFINED};
     std::string identifier    {};
     Expression *expr        {nullptr};
@@ -37,15 +37,15 @@ struct Command
     Commands *thencmds        {nullptr};
     Commands *elsecmds        {nullptr};
     Commands *docmds        {nullptr};
-    
+
     virtual ~Command();
-    
+
     std::int32_t generate(
             std::ostream& output,
             std::uint32_t* length,
             ISymbolTable* symtbl,
             const std::uint32_t& offset = 0);
-    
+
     std::int32_t operator() (
             std::ostream& output,
             std::uint32_t* length,

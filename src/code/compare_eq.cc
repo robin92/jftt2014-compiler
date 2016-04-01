@@ -23,14 +23,14 @@ code::compare_eq(
     const std::uint32_t offset)
 {
     std::ostringstream machine_code;
-    
+
     bool aIsZero = a.has_value and (std::int32_t) a.value.find_first_not_of('0') == -1,
             bIsZero = b.has_value and (std::int32_t) b.value.find_first_not_of('0') == -1;
     if (F_COND_EQ_ZERO and (aIsZero or bIsZero))
     {
         // optymalizacja: == 0
         std::cerr << ">> optymalizacja: == 0\n";
-    
+
         const ISymbolTable::Entry *sym = not(aIsZero) ? &a : &b;
         machine_code
                 << LOAD << " " << sym->current_addr << "\n"
@@ -58,7 +58,7 @@ code::compare_eq(
                 << code::cmd::JUMP << " " << offset + 13 << "\n"    // skok o dwie instrukcje
                 << code::cmd::ZERO << "\n";
     }
-                        
+
     return machine_code.str();
 }
 
