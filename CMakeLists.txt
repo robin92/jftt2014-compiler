@@ -48,10 +48,8 @@ set (VERSION_MINOR 1)
 set (VERSION_PATCH 0)
 set (VERSION_STRING "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}")
 
-set (SOURCEDIR "src")
-include_directories (
-		${SOURCEDIR}
-	)
+set (SOURCEDIR "${CMAKE_SOURCE_DIR}/src")
+include_directories (${SOURCEDIR})
 
 configure_file (${SOURCEDIR}/config.hh.in ${SOURCEDIR}/config.hh)
 
@@ -78,7 +76,8 @@ add_library (genvm
 
 add_executable (kompilator
 		${SOURCEDIR}/main.cc
-		${SOURCEDIR}/parser.tab.cc
+        ${FLEX_scanner_OUTPUTS}
+        ${BISON_parser_OUTPUTS}
 		${SOURCEDIR}/scanner.lex.cc
 		${SOURCEDIR}/ISymbolTable.cc
 		${SOURCEDIR}/SymbolTable.cc
