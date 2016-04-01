@@ -18,11 +18,11 @@ class Command;
 
 struct Commands
 {
-	typedef std::list<Command*> CommandList;
+    typedef std::list<Command*> CommandList;
 
-	CommandList cmds;
+    CommandList cmds;
 
-	virtual ~Commands();
+    virtual ~Commands();
 };
 
 #endif  // COMPILER_COMMANDS_HH_

@@ -18,12 +18,12 @@ using namespace code::cmd;
 std::string
 code::copy_value(const ISymbolTable::Entry& dst, const ISymbolTable::Entry& src)
 {
-	std::ostringstream machine_code;
+    std::ostringstream machine_code;
 
-	machine_code
-			<< LOAD << " " << src.current_addr << "\n"
-			<< STORE << " " << dst.current_addr << "\n";
+    machine_code
+            << LOAD << " " << src.current_addr << "\n"
+            << STORE << " " << dst.current_addr << "\n";
 
-	return machine_code.str();
+    return machine_code.str();
 }
 

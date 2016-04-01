@@ -15,6 +15,6 @@
 int
 main(int argc, char **argv)
 {
-	return yyparse();
+    return yyparse();
 }
 

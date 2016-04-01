@@ -14,10 +14,10 @@
 
 Commands::~Commands()
 {
-	for (Command* cmd : cmds)
-	{
-		if (cmd) delete cmd;
-		cmd = nullptr;
-	}
+    for (Command* cmd : cmds)
+    {
+        if (cmd) delete cmd;
+        cmd = nullptr;
+    }
 }
 

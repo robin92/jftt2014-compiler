@@ -12,29 +12,29 @@
 
 struct Expression
 {
-	enum class Operation : std::uint8_t
-	{
-		ADD = 1,
-		SUBTRACT,
-		MULTIPLY,
-		DIVIDE,
-		MODULO,
-	};
+    enum class Operation : std::uint8_t
+    {
+        ADD = 1,
+        SUBTRACT,
+        MULTIPLY,
+        DIVIDE,
+        MODULO,
+    };
 
-	enum class Type : std::uint8_t
-	{
-		UNDEFINED = 0,
-		NUMBER,
-		IDENTIFIER,
-		COMPLEX,
-	};
+    enum class Type : std::uint8_t
+    {
+        UNDEFINED = 0,
+        NUMBER,
+        IDENTIFIER,
+        COMPLEX,
+    };
 
-	typedef std::tuple<std::string, std::string, Operation> Complex;
+    typedef std::tuple<std::string, std::string, Operation> Complex;
 
-	Type type				{Type::UNDEFINED};
-	std::string number		{};
-	std::string identifier	{};
-	Complex complex			{};
+    Type type                {Type::UNDEFINED};
+    std::string number        {};
+    std::string identifier    {};
+    Complex complex            {};
 };
 
 #endif  // COMPILER_EXPRESSION_HH_
